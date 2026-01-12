@@ -11,6 +11,9 @@ function Signup({ goToLogin }) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  const [country, setCountry] = useState("");
+  const [state, setState] = useState("");
+
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
@@ -23,7 +26,7 @@ function Signup({ goToLogin }) {
     setError("");
     setSuccess("");
 
-    if (!email || !password || !confirmPassword) {
+    if (!email || !password || !confirmPassword || !country || !state) {
       setError("All fields are required");
       return;
     }
@@ -48,6 +51,7 @@ function Signup({ goToLogin }) {
 
   return (
     <div className="main">
+      {/* LEFT PANEL */}
       <div className="left-panel">
         <h1>
           TaxPal{" "}
@@ -61,6 +65,7 @@ function Signup({ goToLogin }) {
         </div>
       </div>
 
+      {/* RIGHT PANEL */}
       <div className="right-panel">
         <h2>Create Account</h2>
 
@@ -76,13 +81,13 @@ function Signup({ goToLogin }) {
             onChange={(e) => setEmail(e.target.value)}
           />
 
+          {/* PASSWORD */}
           <div className="password-box">
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              autoComplete="new-password"
             />
             <span
               className="eye-icon"
@@ -92,15 +97,13 @@ function Signup({ goToLogin }) {
             </span>
           </div>
 
+          {/* CONFIRM PASSWORD */}
           <div className="password-box">
             <input
               type={showConfirmPassword ? "text" : "password"}
               placeholder="Confirm Password"
               value={confirmPassword}
-              onChange={(e) =>
-                setConfirmPassword(e.target.value)
-              }
-              autoComplete="new-password"
+              onChange={(e) => setConfirmPassword(e.target.value)}
             />
             <span
               className="eye-icon"
@@ -111,6 +114,53 @@ function Signup({ goToLogin }) {
               {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
             </span>
           </div>
+
+          {/* COUNTRY */}
+          <select
+            value={country}
+            onChange={(e) => {
+              setCountry(e.target.value);
+              setState("");
+            }}
+          >
+            <option value="">Country</option>
+            <option value="India">India</option>
+            <option value="USA">USA</option>
+          </select>
+
+          {/* STATE */}
+          <select
+            value={state}
+            onChange={(e) => setState(e.target.value)}
+            disabled={!country}
+          >
+            <option value="">State</option>
+
+            {country === "India" && (
+              <>
+                <option value="Tamil Nadu">Tamil Nadu</option>
+                <option value="Kerala">Kerala</option>
+                <option value="Karnataka">Karnataka</option>
+                <option value="Andhra Pradesh">Andhra Pradesh</option>
+                <option value="Telangana">Telangana</option>
+                <option value="Maharashtra">Maharashtra</option>
+                <option value="Delhi">Delhi</option>
+                <option value="West Bengal">West Bengal</option>
+              </>
+            )}
+
+            {country === "USA" && (
+              <>
+                <option value="California">California</option>
+                <option value="Texas">Texas</option>
+                <option value="New York">New York</option>
+                <option value="Florida">Florida</option>
+                <option value="Illinois">Illinois</option>
+                <option value="Washington">Washington</option>
+                <option value="Arizona">Arizona</option>
+              </>
+            )}
+          </select>
 
           {error && <p style={{ color: "red" }}>{error}</p>}
           {success && <p style={{ color: "green" }}>{success}</p>}
@@ -128,7 +178,7 @@ function Signup({ goToLogin }) {
 }
 
 function App() {
-  const [showSignup, setShowSignup] = useState(false);
+  const [showSignup, setShowSignup] = useState(true);
 
   return showSignup ? (
     <Signup goToLogin={() => setShowSignup(false)} />

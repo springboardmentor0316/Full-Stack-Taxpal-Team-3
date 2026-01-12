@@ -63,6 +63,7 @@ function Login({ goToSignup }) {
             onChange={(e) => setEmail(e.target.value)}
           />
 
+          {/* PASSWORD */}
           <div className="password-box">
             <input
               type={showPassword ? "text" : "password"}
@@ -78,6 +79,20 @@ function Login({ goToSignup }) {
               {showPassword ? <FaEyeSlash /> : <FaEye />}
             </span>
           </div>
+
+          {/* FORGOT PASSWORD */}
+          <p
+            style={{
+              textAlign: "right",
+              fontSize: "13px",
+              color: "#4b2cff",
+              cursor: "pointer",
+              marginTop: "-8px",
+              marginBottom: "15px",
+            }}
+          >
+            Forgot password?
+          </p>
 
           {error && <p style={{ color: "red" }}>{error}</p>}
           {success && <p style={{ color: "green" }}>{success}</p>}

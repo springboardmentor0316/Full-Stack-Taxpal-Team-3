@@ -131,6 +131,28 @@ button {
   color: #ffffff94;
 }
 
+select {
+  width: 100%;
+  height: 44px;
+  margin-bottom: 15px;
+  padding-left: 20px;
+  padding-right: 40px; /* space for arrow */
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  background-color: white;
+  box-sizing: border-box;
+
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  background-image: url("data:image/svg+xml;utf8,<svg fill='%23666' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 15px center;
+}
+
+
 /* REMOVE BROWSER DEFAULT PASSWORD EYE */
 input[type="password"]::-ms-reveal,
 input[type="password"]::-ms-clear {

@@ -4,6 +4,7 @@ import Signup from "./pages/signup";
 import ForgetPassword from "./pages/forgetpassword";
 import VerificationCode from "./pages/VerificationCode";
 import ResetPassword from "./pages/resetpassword";
+import Dashboard from "./pages/dashboard";
 function App() {
   return (
     <BrowserRouter>
@@ -14,6 +15,7 @@ function App() {
         <Route path="/forgot-password" element={<ForgetPassword />} />
         <Route path="/verify-code" element={<VerificationCode />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/dashboard" element={<Dashboard />} />
 
       </Routes>
     </BrowserRouter>

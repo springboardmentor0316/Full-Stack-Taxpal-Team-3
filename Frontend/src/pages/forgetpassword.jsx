@@ -62,6 +62,7 @@ function ForgetPassword() {
         </p>
 
         <form className="form" onSubmit={handleSubmit}>
+         
 
           <div className="email-box">
             <span className="mail-icon">✉</span>

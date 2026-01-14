@@ -36,6 +36,11 @@ function Login() {
     }
 
     setSuccess("Login successful!");
+
+setTimeout(() => {
+  navigate("/dashboard");
+}, 800);
+
   };
 
   return (

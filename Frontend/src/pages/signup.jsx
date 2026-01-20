@@ -9,26 +9,26 @@ function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  //  EXACT schema fields
+  // ✅ EXACT schema fields
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [country, setCountry] = useState("");
   const [incomeBracket, setIncomeBracket] = useState("");
+
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  const isValidEmail = (email) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setSuccess("");
 
-    
+    // ✅ validations
     if (!name || !email || !password || !confirmPassword || !country) {
       setError("All required fields must be filled");
       return;
@@ -49,7 +49,7 @@ function Signup() {
       return;
     }
 
-   
+    // ✅ payload exactly matching backend schema
     const signupData = {
       name,
       email,
@@ -58,9 +58,31 @@ function Signup() {
       income_bracket: incomeBracket || undefined, // optional
     };
 
-    console.log("Signup payload:", signupData);
+    try {
+      const res = await fetch("http://localhost:4000/api/users/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(signupData),
+      });
 
-    setSuccess("Account created successfully!");
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.message || "Registration failed");
+        return;
+      }
+
+      setSuccess(data.message || "Account created successfully!");
+
+      // ✅ redirect to login after success
+      setTimeout(() => {
+        navigate("/");
+      }, 800);
+    } catch (err) {
+      setError("Server error. Please try again.");
+    }
   };
 
   return (
@@ -82,28 +104,28 @@ function Signup() {
         <h2>Create Account</h2>
 
         <form className="form" onSubmit={handleSubmit}>
-          {/* FULL NAME */}
+          {/* ✅ FULL NAME */}
           <input
             placeholder="Full Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
 
-          {/* EMAIL */}
+          {/* ✅ EMAIL */}
           <input
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
 
-          {/*  COUNTRY */}
+          {/* ✅ COUNTRY */}
           <input
             placeholder="Country"
             value={country}
             onChange={(e) => setCountry(e.target.value)}
           />
 
-          {/* INCOME BRACKET (optional) */}
+          {/* ✅ INCOME BRACKET (optional) */}
           <select
             className="input-field"
             value={incomeBracket}
@@ -115,13 +137,14 @@ function Signup() {
             <option value="High">High</option>
           </select>
 
-          {/* PASSWORD */}
+          {/* ✅ PASSWORD */}
           <div className="password-box">
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              autoComplete="new-password"
             />
             <span
               className="eye-icon"
@@ -131,19 +154,18 @@ function Signup() {
             </span>
           </div>
 
-          {/* CONFIRM PASSWORD */}
+          {/* ✅ CONFIRM PASSWORD */}
           <div className="password-box">
             <input
               type={showConfirmPassword ? "text" : "password"}
               placeholder="Confirm Password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
+              autoComplete="new-password"
             />
             <span
               className="eye-icon"
-              onClick={() =>
-                setShowConfirmPassword(!showConfirmPassword)
-              }
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
             >
               {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
             </span>

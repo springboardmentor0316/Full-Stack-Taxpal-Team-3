@@ -1,4 +1,4 @@
-import "../styles/login.css"; // or "../App.css" if you prefer
+import "../styles/login.css";
 import { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
@@ -7,15 +7,17 @@ function Login() {
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
   const isValidEmail = (email) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setSuccess("");
@@ -30,17 +32,35 @@ function Login() {
       return;
     }
 
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters");
-      return;
+    try {
+      const res = await fetch("http://localhost:4000/api/users/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.message || "Invalid email or password");
+        return;
+      }
+
+      setSuccess("Login successful!");
+
+      // ✅ store token if backend sends it
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+      }
+
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 800);
+    } catch (err) {
+      setError("Server error");
     }
-
-    setSuccess("Login successful!");
-
-setTimeout(() => {
-  navigate("/dashboard");
-}, 800);
-
   };
 
   return (
@@ -106,9 +126,7 @@ setTimeout(() => {
 
           <p className="login">
             Don’t have an account?{" "}
-            <span onClick={() => navigate("/signup")}>
-              Create Account
-            </span>
+            <span onClick={() => navigate("/signup")}>Create Account</span>
           </p>
         </form>
       </div>

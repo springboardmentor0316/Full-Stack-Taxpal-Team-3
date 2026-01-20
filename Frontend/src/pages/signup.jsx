@@ -3,20 +3,19 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import "../styles/signup.css";
 
-
 function Signup() {
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  //  EXACT schema fields
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [country, setCountry] = useState("");
-const [state, setState] = useState("");
-const [incomeBracket, setIncomeBracket] = useState("");
-
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [country, setCountry] = useState("");
+  const [incomeBracket, setIncomeBracket] = useState("");
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -28,18 +27,12 @@ const [incomeBracket, setIncomeBracket] = useState("");
     e.preventDefault();
     setError("");
     setSuccess("");
-if (
-  !email ||
-  !password ||
-  !confirmPassword ||
-  !country ||
-  !state ||
-  !incomeBracket
-) {
-  setError("All fields are required");
-  return;
-}
 
+    
+    if (!name || !email || !password || !confirmPassword || !country) {
+      setError("All required fields must be filled");
+      return;
+    }
 
     if (!isValidEmail(email)) {
       setError("Please enter a valid email address");
@@ -55,6 +48,17 @@ if (
       setError("Password must be at least 6 characters");
       return;
     }
+
+   
+    const signupData = {
+      name,
+      email,
+      password,
+      country,
+      income_bracket: incomeBracket || undefined, // optional
+    };
+
+    console.log("Signup payload:", signupData);
 
     setSuccess("Account created successfully!");
   };
@@ -78,41 +82,40 @@ if (
         <h2>Create Account</h2>
 
         <form className="form" onSubmit={handleSubmit}>
-          <div className="row">
-            <input placeholder="First Name" />
-            <input placeholder="Last Name" />
-          </div>
-<input
-  placeholder="Email"
-  value={email}
-  onChange={(e) => setEmail(e.target.value)}
-/>
+          {/* FULL NAME */}
+          <input
+            placeholder="Full Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
 
-<input
-  placeholder="Country"
-  value={country}
-  onChange={(e) => setCountry(e.target.value)}
-/>
+          {/* EMAIL */}
+          <input
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
 
-<input
-  placeholder="State"
-  value={state}
-  onChange={(e) => setState(e.target.value)}
-/>
+          {/*  COUNTRY */}
+          <input
+            placeholder="Country"
+            value={country}
+            onChange={(e) => setCountry(e.target.value)}
+          />
 
-{/* ✅ INCOME BRACKET */}
-<select
-  className="input-field"
-  value={incomeBracket}
-  onChange={(e) => setIncomeBracket(e.target.value)}
->
-  <option value="">Select Income Bracket</option>
-  <option value="below_3L">Below ₹3,00,000</option>
-  <option value="3L_6L">₹3,00,000 – ₹6,00,000</option>
-  <option value="6L_10L">₹6,00,000 – ₹10,00,000</option>
-  <option value="above_10L">Above ₹10,00,000</option>
-</select>
+          {/* INCOME BRACKET (optional) */}
+          <select
+            className="input-field"
+            value={incomeBracket}
+            onChange={(e) => setIncomeBracket(e.target.value)}
+          >
+            <option value="">Select Income Bracket (Optional)</option>
+            <option value="Low">Low</option>
+            <option value="Middle">Middle</option>
+            <option value="High">High</option>
+          </select>
 
+          {/* PASSWORD */}
           <div className="password-box">
             <input
               type={showPassword ? "text" : "password"}
@@ -128,6 +131,7 @@ if (
             </span>
           </div>
 
+          {/* CONFIRM PASSWORD */}
           <div className="password-box">
             <input
               type={showConfirmPassword ? "text" : "password"}

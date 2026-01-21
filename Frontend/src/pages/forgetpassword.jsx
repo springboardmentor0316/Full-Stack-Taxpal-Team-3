@@ -4,35 +4,62 @@ import "../styles/forgetpassword.css";
 
 function ForgetPassword() {
   const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  const isValidEmail = (email) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-  const handleSubmit = (e) => {
-  e.preventDefault();
-  setError("");
-  setSuccess("");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setSuccess("");
 
-  if (!email) {
-    setError("Email is required");
-    return;
-  }
+    if (!email) {
+      setError("Email is required");
+      return;
+    }
 
-  if (!isValidEmail(email)) {
-    setError("Please enter a valid email address");
-    return;
-  }
+    if (!isValidEmail(email)) {
+      setError("Please enter a valid email address");
+      return;
+    }
 
-  setSuccess("Verification code sent to your email");
+    try {
+      const res = await fetch("http://localhost:4000/api/users/forgot-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
 
-  // ✅ go to verification page
-  setTimeout(() => {
-    navigate("/verify-code");
-  }, 800);
-};
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.message || "Something went wrong");
+        return;
+      }
+
+      setSuccess("Reset link generated successfully!");
+
+      // ✅ backend returns resetToken
+      const token = data.resetToken;
+
+      if (!token) {
+        setError("Token not received from backend");
+        return;
+      }
+
+      // ✅ go to reset password page with token
+      setTimeout(() => {
+        navigate(`/reset-password/${token}`);
+      }, 800);
+    } catch (err) {
+      setError("Server error. Please start backend.");
+    }
+  };
 
   return (
     <div className="main">
@@ -42,8 +69,7 @@ function ForgetPassword() {
           Forgot Your Password ?
           <span className="highlight-text">
             <br />
-            No Worries We’ll Send You And Verification To Reset
-            Your Password
+            No Worries We’ll Send You And Verification To Reset Your Password
           </span>
         </h1>
 
@@ -57,13 +83,11 @@ function ForgetPassword() {
         <h2>Forgot Password</h2>
 
         <p className="description">
-          Enter Your Email ID We Will Send You A Verification
-          Code To Reset Your Password
+          Enter Your Email ID We Will Send You A Verification Code To Reset Your
+          Password
         </p>
 
         <form className="form" onSubmit={handleSubmit}>
-         
-
           <div className="email-box">
             <span className="mail-icon">✉</span>
             <input
@@ -77,9 +101,7 @@ function ForgetPassword() {
           {error && <p className="error">{error}</p>}
           {success && <p className="success">{success}</p>}
 
-          <button type="submit">
-            Send Verification Code
-          </button>
+          <button type="submit">Send Verification Code</button>
 
           <p className="login-text">
             remembered your password?{" "}

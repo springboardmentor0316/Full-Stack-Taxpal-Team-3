@@ -15,6 +15,16 @@ const userSchema = new mongoose.Schema({
       type: String,
       enum: ["Low", "Middle", "High"]
     }
-  }, { timestamps: true })
+
+    //new added
+    ,resetPasswordToken: {
+      type: String
+    },
+    resetPasswordExpire: {
+      type: Date
+    }
+    
+  }, { timestamps: true }
+)
 
 module.exports = mongoose.model("User", userSchema)

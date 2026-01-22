@@ -53,7 +53,7 @@ function Login() {
         setSuccess(data.message || "OTP sent. Please verify.");
         localStorage.setItem("pendingLoginEmail", email);
         setTimeout(() => {
-          navigate("/verify-code", { state: { mode: "login", email, devOtp: data.otp } });
+          navigate("/verify-code", { state: { mode: "login", email } });
         }, 300);
         return;
       }

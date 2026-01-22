@@ -1,4 +1,5 @@
 const express = require('express')
+require('dotenv').config()
 // create the object of the express server
 const app = express()
 const userRoutes = require('./routes/userRoutes')

@@ -8,7 +8,6 @@ function VerificationCode() {
 
   const mode = location.state?.mode || "login";
   const email = location.state?.email || localStorage.getItem("pendingLoginEmail") || "";
-  const devOtp = location.state?.devOtp;
 
   const [otp, setOtp] = useState(Array(6).fill(""));
   const [error, setError] = useState("");
@@ -139,11 +138,6 @@ function VerificationCode() {
           </p>
         )}
 
-        {devOtp && (
-          <p className="description" style={{ marginTop: "8px", color: "#4b2cff" }}>
-            Dev OTP: <strong>{devOtp}</strong>
-          </p>
-        )}
 
         <form onSubmit={handleSubmit}>
           <div className="otp-container">

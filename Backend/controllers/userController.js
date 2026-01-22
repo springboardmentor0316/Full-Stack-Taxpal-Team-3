@@ -5,6 +5,7 @@ const { hashPassword, comparePassword } = require("../utils/auth")
 const config = require("../utils/config")
 const jwt = require("jsonwebtoken")
 const crypto = require("crypto")
+const { sendOtpEmail } = require("../utils/email")
 
 const generateSixDigitOtp = () => {
   return String(crypto.randomInt(0, 1000000)).padStart(6, "0")
@@ -124,6 +125,19 @@ exports.login = async (req, res) => {
       user.loginOtpExpire = Date.now() + (config.otpExpireMinutes || 10) * 60 * 1000
       await user.save()
 
+      try {
+        await sendOtpEmail({
+          to: user.email,
+          otp,
+          purpose: "Login verification",
+        })
+      } catch (e) {
+        return res.status(500).json({
+          message: "Failed to send OTP email. Please try again later.",
+          error: e.message,
+        })
+      }
+
       // In production, send OTP via email/SMS. For now we optionally return it for dev.
       const payload = {
         message: "OTP sent to your email. Please verify to continue.",
@@ -218,6 +232,19 @@ exports.resendLoginOtp = async (req, res) => {
     user.loginOtpHash = hashOtp(otp)
     user.loginOtpExpire = Date.now() + (config.otpExpireMinutes || 10) * 60 * 1000
     await user.save()
+
+    try {
+      await sendOtpEmail({
+        to: user.email,
+        otp,
+        purpose: "Login verification",
+      })
+    } catch (e) {
+      return res.status(500).json({
+        message: "Failed to send OTP email. Please try again later.",
+        error: e.message,
+      })
+    }
 
     const payload = {
       message: "OTP resent to your email",

@@ -43,7 +43,7 @@ function ResetPassword() {
 
     try {
       const res = await fetch(
-        `http://localhost:4000/api/users/reset-password/${token}`,
+        `http://127.0.0.1:4000/api/users/reset-password/${token}`,
         {
           method: "POST",
           headers: {

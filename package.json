@@ -1,0 +1,13 @@
+{
+  "name": "full-stack-taxpal-team-3",
+  "private": true,
+  "scripts": {
+    "dev": "npm --prefix Frontend run dev",
+    "backend": "npm --prefix Backend start",
+    "frontend": "npm --prefix Frontend run dev",
+    "start": "npm run backend",
+    "install:backend": "npm --prefix Backend install",
+    "install:frontend": "npm --prefix Frontend install",
+    "install:all": "npm run install:backend && npm run install:frontend"
+  }
+}

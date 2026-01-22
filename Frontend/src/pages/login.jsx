@@ -33,7 +33,7 @@ function Login() {
     }
 
     try {
-      const res = await fetch("http://localhost:4000/api/users/login", {
+      const res = await fetch("http://127.0.0.1:4000/api/users/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

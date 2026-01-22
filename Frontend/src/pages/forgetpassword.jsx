@@ -27,7 +27,7 @@ function ForgetPassword() {
     }
 
     try {
-      const res = await fetch("http://localhost:4000/api/users/forgot-password", {
+      const res = await fetch("http://127.0.0.1:4000/api/users/forgot-password", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

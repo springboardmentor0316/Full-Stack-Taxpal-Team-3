@@ -5,6 +5,22 @@ const { hashPassword, comparePassword } = require("../utils/auth")
 const config = require("../utils/config")
 const jwt = require("jsonwebtoken")
 const crypto = require("crypto")
+
+const generateSixDigitOtp = () => {
+  return String(crypto.randomInt(0, 1000000)).padStart(6, "0")
+}
+
+const hashOtp = (otp) => {
+  return crypto.createHash("sha256").update(String(otp)).digest("hex")
+}
+
+const issueJwt = (user) => {
+  return jwt.sign(
+    { userId: user._id, email: user.email },
+    config.secret,
+    { expiresIn: "1h" }
+  )
+}
 //fetches all userss
 exports.getUsers = async (req, res) => {
   try {
@@ -101,12 +117,30 @@ exports.login = async (req, res) => {
       return res.status(401).json({ message: "Invalid email or password" })
     }
 
+    // If email isn't verified yet, send OTP and block login until verified
+    if (!user.isEmailVerified) {
+      const otp = generateSixDigitOtp()
+      user.loginOtpHash = hashOtp(otp)
+      user.loginOtpExpire = Date.now() + (config.otpExpireMinutes || 10) * 60 * 1000
+      await user.save()
+
+      // In production, send OTP via email/SMS. For now we optionally return it for dev.
+      const payload = {
+        message: "OTP sent to your email. Please verify to continue.",
+        requiresOtp: true,
+        email: user.email,
+        userId: user._id
+      }
+
+      if (config.exposeOtpInResponse) {
+        payload.otp = otp
+      }
+
+      return res.status(200).json(payload)
+    }
+
     // 4. Generate JWT token
-    const token = jwt.sign(
-      { userId: user._id, email: user.email },
-      config.secret,
-      { expiresIn: "1h" }
-    )
+    const token = issueJwt(user)
 
     // 5. Success
     res.json({
@@ -115,6 +149,88 @@ exports.login = async (req, res) => {
       userId: user._id
     })
 
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message })
+  }
+}
+
+exports.verifyLoginOtp = async (req, res) => {
+  try {
+    const { email, otp } = req.body
+
+    if (!email || !otp) {
+      return res.status(400).json({ message: "Email and OTP are required" })
+    }
+
+    const user = await User.findOne({ email })
+    if (!user) {
+      return res.status(404).json({ message: "User not found" })
+    }
+
+    if (user.isEmailVerified) {
+      const token = issueJwt(user)
+      return res.status(200).json({ message: "Already verified", token, userId: user._id })
+    }
+
+    if (!user.loginOtpHash || !user.loginOtpExpire) {
+      return res.status(400).json({ message: "OTP not requested. Please login again." })
+    }
+
+    if (user.loginOtpExpire.getTime() < Date.now()) {
+      return res.status(400).json({ message: "OTP expired. Please request a new OTP." })
+    }
+
+    const incomingHash = hashOtp(otp)
+    if (incomingHash !== user.loginOtpHash) {
+      return res.status(400).json({ message: "Invalid OTP" })
+    }
+
+    user.isEmailVerified = true
+    user.loginOtpHash = undefined
+    user.loginOtpExpire = undefined
+    await user.save()
+
+    const token = issueJwt(user)
+    return res.status(200).json({ message: "OTP verified", token, userId: user._id })
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message })
+  }
+}
+
+exports.resendLoginOtp = async (req, res) => {
+  try {
+    const { email } = req.body
+
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" })
+    }
+
+    const user = await User.findOne({ email })
+    if (!user) {
+      return res.status(404).json({ message: "User not found" })
+    }
+
+    if (user.isEmailVerified) {
+      return res.status(400).json({ message: "User is already verified" })
+    }
+
+    const otp = generateSixDigitOtp()
+    user.loginOtpHash = hashOtp(otp)
+    user.loginOtpExpire = Date.now() + (config.otpExpireMinutes || 10) * 60 * 1000
+    await user.save()
+
+    const payload = {
+      message: "OTP resent to your email",
+      requiresOtp: true,
+      email: user.email,
+      userId: user._id
+    }
+
+    if (config.exposeOtpInResponse) {
+      payload.otp = otp
+    }
+
+    return res.status(200).json(payload)
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message })
   }

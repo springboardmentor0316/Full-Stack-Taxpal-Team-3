@@ -26,6 +26,7 @@ app.use('/api/users', userRoutes)
 
 
 // start the server on the port
-app.listen(4000, 'localhost', () => {
-    console.log('server started at port 4000')
+const PORT = process.env.PORT || 4000
+app.listen(PORT, () => {
+    console.log(`server started at port ${PORT}`)
 })

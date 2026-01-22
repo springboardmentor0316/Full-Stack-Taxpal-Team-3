@@ -16,6 +16,17 @@ const userSchema = new mongoose.Schema({
       enum: ["Low", "Middle", "High"]
     }
 
+    ,isEmailVerified: {
+      type: Boolean,
+      default: false
+    },
+    loginOtpHash: {
+      type: String
+    },
+    loginOtpExpire: {
+      type: Date
+    }
+
     //new added
     ,resetPasswordToken: {
       type: String

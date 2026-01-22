@@ -6,6 +6,8 @@ const {
   getUsers,
   registration,
   login,
+  verifyLoginOtp,
+  resendLoginOtp,
   forgotPassword,
   resetPassword,
 } = require("../controllers/userController.js");
@@ -13,6 +15,8 @@ const {
 router.get("/", verifyToken, getUsers);
 
 router.post("/login", login);
+router.post("/verify-login-otp", verifyLoginOtp);
+router.post("/resend-login-otp", resendLoginOtp);
 router.post("/register", registration);
 
 // Forgot password -> generates token

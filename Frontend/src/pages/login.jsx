@@ -48,6 +48,16 @@ function Login() {
         return;
       }
 
+      // If backend requires OTP (newly registered/unverified user)
+      if (data.requiresOtp) {
+        setSuccess(data.message || "OTP sent. Please verify.");
+        localStorage.setItem("pendingLoginEmail", email);
+        setTimeout(() => {
+          navigate("/verify-code", { state: { mode: "login", email, devOtp: data.otp } });
+        }, 300);
+        return;
+      }
+
       setSuccess("Login successful!");
 
       // ✅ store token if backend sends it

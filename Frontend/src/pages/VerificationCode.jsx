@@ -1,10 +1,18 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import "../styles/verificationcode.css";
 
 function VerificationCode() {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const mode = location.state?.mode || "login";
+  const email = location.state?.email || localStorage.getItem("pendingLoginEmail") || "";
+  const devOtp = location.state?.devOtp;
+
   const [otp, setOtp] = useState(Array(6).fill(""));
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const handleChange = (value, index) => {
     if (!/^[0-9]?$/.test(value)) return;
@@ -19,12 +27,83 @@ function VerificationCode() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+    setSuccess("");
+
     const code = otp.join("");
     if (code.length !== 6) return alert("Enter full code");
-    // later: verify API
-    navigate("/reset-password");
+
+    if (mode !== "login") {
+      setError("Unsupported verification mode");
+      return;
+    }
+
+    if (!email) {
+      setError("Missing email. Please login again.");
+      return;
+    }
+
+    try {
+      const res = await fetch("http://localhost:4000/api/users/verify-login-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, otp: code }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.message || "OTP verification failed");
+        return;
+      }
+
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+      }
+      if (data.userId) {
+        localStorage.setItem("userId", data.userId);
+      }
+      localStorage.removeItem("pendingLoginEmail");
+
+      setSuccess("Verified! Logging you in...");
+      setTimeout(() => navigate("/dashboard"), 500);
+    } catch (err) {
+      setError("Server error. Please start backend.");
+    }
+  };
+
+  const handleResend = async () => {
+    setError("");
+    setSuccess("");
+
+    if (!email) {
+      setError("Missing email. Please login again.");
+      return;
+    }
+
+    try {
+      const res = await fetch("http://localhost:4000/api/users/resend-login-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.message || "Failed to resend OTP");
+        return;
+      }
+
+      // For dev, backend may return otp
+      if (data.otp) {
+        setSuccess(`OTP resent (dev): ${data.otp}`);
+      } else {
+        setSuccess("OTP resent. Please check your email.");
+      }
+    } catch (err) {
+      setError("Server error. Please start backend.");
+    }
   };
 
   return (
@@ -32,11 +111,10 @@ function VerificationCode() {
       {/* LEFT PANEL */}
       <div className="left-panel">
         <h1>
-          Forgot Your Password ?
+          Verify Your Account
           <span className="highlight-text">
             <br />
-            No Worries We’ll Send You And Verification To Reset
-            Your Password
+            Enter the 6-digit OTP to continue
           </span>
         </h1>
 
@@ -54,6 +132,18 @@ function VerificationCode() {
           <br />
           Please Enter The Code Below To Continue
         </p>
+
+        {email && (
+          <p className="description" style={{ marginTop: "8px" }}>
+            Verifying: <strong>{email}</strong>
+          </p>
+        )}
+
+        {devOtp && (
+          <p className="description" style={{ marginTop: "8px", color: "#4b2cff" }}>
+            Dev OTP: <strong>{devOtp}</strong>
+          </p>
+        )}
 
         <form onSubmit={handleSubmit}>
           <div className="otp-container">
@@ -74,11 +164,14 @@ function VerificationCode() {
   ))}
 </div>
 
+          {error && <p style={{ color: "red", marginTop: "12px" }}>{error}</p>}
+          {success && <p style={{ color: "green", marginTop: "12px" }}>{success}</p>}
+
           <button type="submit">Verify Code</button>
 
           <p className="resend">
             didn't receive the code ?{" "}
-            <span>Resend</span>
+            <span style={{ cursor: "pointer" }} onClick={handleResend}>Resend</span>
           </p>
         </form>
       </div>

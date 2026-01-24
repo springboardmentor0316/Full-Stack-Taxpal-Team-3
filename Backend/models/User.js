@@ -24,15 +24,19 @@ const userSchema = new mongoose.Schema({
       type: String
     },
     loginOtpExpire: {
-      type: Date
-    }
+      type: Number
+    },
 
-    //new added
-    ,resetPasswordToken: {
+    // 🔥 FORGOT PASSWORD – OTP BASED (ADD THESE)
+    resetOtpHash: {
       type: String
     },
-    resetPasswordExpire: {
-      type: Date
+    resetOtpExpire: {
+      type: Number
+    },
+    resetOtpVerified: {
+      type: Boolean,
+      default: false
     }
     
   }, { timestamps: true }

@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import "../styles/resetpassword.css";
 
 function ResetPassword() {
   const navigate = useNavigate();
-  const { token } = useParams(); // ✅ token from URL
+  const { state } = useLocation(); // ✅ email passed from VerifyOtp
+  const email = state?.email;
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -20,6 +21,11 @@ function ResetPassword() {
     e.preventDefault();
     setError("");
     setSuccess("");
+
+    if (!email) {
+      setError("Session expired. Please start forgot password again.");
+      return;
+    }
 
     if (!password || !confirmPassword) {
       setError("All fields are required");
@@ -36,20 +42,18 @@ function ResetPassword() {
       return;
     }
 
-    if (!token) {
-      setError("Reset token missing. Please try forgot password again.");
-      return;
-    }
-
     try {
       const res = await fetch(
-        `http://127.0.0.1:4000/api/users/reset-password/${token}`,
+        "http://127.0.0.1:4000/api/users/reset-password",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ password }),
+          body: JSON.stringify({
+            email,
+            password,
+          }),
         }
       );
 
@@ -102,12 +106,8 @@ function ResetPassword() {
               placeholder="New Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              autoComplete="new-password"
             />
-            <span
-              className="eye-icon"
-              onClick={() => setShowPassword(!showPassword)}
-            >
+            <span className="eye-icon" onClick={() => setShowPassword(!showPassword)}>
               {showPassword ? <FaEyeSlash /> : <FaEye />}
             </span>
           </div>
@@ -118,12 +118,8 @@ function ResetPassword() {
               placeholder="Confirm New Password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              autoComplete="new-password"
             />
-            <span
-              className="eye-icon"
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            >
+            <span className="eye-icon" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
               {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
             </span>
           </div>

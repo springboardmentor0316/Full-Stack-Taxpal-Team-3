@@ -15,51 +15,49 @@ function ForgetPassword() {
     e.preventDefault();
     setError("");
     setSuccess("");
-
+  
     if (!email) {
       setError("Email is required");
       return;
     }
-
+  
     if (!isValidEmail(email)) {
       setError("Please enter a valid email address");
       return;
     }
-
+  
     try {
-      const res = await fetch("http://127.0.0.1:4000/api/users/forgot-password", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
-      });
-
+      const res = await fetch(
+        "http://127.0.0.1:4000/api/users/forgot-password",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email }),
+        }
+      );
+  
       const data = await res.json();
-
+  
       if (!res.ok) {
         setError(data.message || "Something went wrong");
         return;
       }
-
-      setSuccess("Reset link generated successfully!");
-
-      // ✅ backend returns resetToken
-      const token = data.resetToken;
-
-      if (!token) {
-        setError("Token not received from backend");
-        return;
-      }
-
-      // ✅ go to reset password page with token
+  
+      // ✅ OTP sent
+      setSuccess("OTP sent to your email");
+  
+      // ✅ go to Verify OTP page (NOT reset password)
       setTimeout(() => {
-        navigate(`/reset-password/${token}`);
+        navigate("/verify-otp", { state: { email } });
       }, 800);
+  
     } catch (err) {
       setError("Server error. Please start backend.");
     }
   };
+  
 
   return (
     <div className="main">

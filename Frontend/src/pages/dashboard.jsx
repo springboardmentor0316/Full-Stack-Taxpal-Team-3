@@ -1,8 +1,13 @@
 import { useNavigate } from "react-router-dom";
+import { FiSettings, FiX } from "react-icons/fi";
 import "../styles/dashboard.css";
 
 function Dashboard() {
   const navigate = useNavigate();
+
+  const userName = "Infosys admin";
+  const userEmail = "infosys.admin@example.com";
+  const userInitials = "IA";
   
   const logout = () => {
       localStorage.removeItem("token")
@@ -19,13 +24,36 @@ function Dashboard() {
           <a className="active">Dashboard</a>
           <a>Income</a>
           <a>Expenses</a>
+          <a onClick={() => navigate("/budgets")}>Budgets</a>
           <a>Tax Estimator</a>
           <a>Reports</a>
           <a>Profile</a>
-          <a><button onClick={logout} >
-            Logout
-          </button></a>
         </nav>
+
+        <div className="settings-sidebar-footer">
+          <div className="settings-user">
+            <div className="settings-avatar" aria-hidden="true">
+              {userInitials}
+            </div>
+            <div className="settings-user-meta">
+              <div className="settings-user-name">{userName}</div>
+              <div className="settings-user-email">{userEmail}</div>
+            </div>
+          </div>
+
+          <div className="settings-footer-links">
+            <button
+              className="settings-footer-link"
+              type="button"
+              onClick={() => navigate("/settings/categories")}
+            >
+              <FiSettings /> Settings
+            </button>
+            <button className="settings-footer-link" type="button" onClick={logout}>
+              <FiX /> Logout
+            </button>
+          </div>
+        </div>
       </aside>
 
       {/* MAIN CONTENT */}

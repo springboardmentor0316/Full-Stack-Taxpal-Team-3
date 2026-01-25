@@ -6,6 +6,8 @@ import VerificationCode from "./pages/VerificationCode";
 import ResetPassword from "./pages/resetpassword";
 import Dashboard from "./pages/dashboard";
 import VerifyOtp from "./pages/VerifyOtp";
+import Budgets from "./pages/budgets";
+import Categories from "./pages/categories";
 
 function App() {
   return (
@@ -18,6 +20,8 @@ function App() {
         <Route path="/verify-code" element={<VerificationCode />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/budgets" element={<Budgets />} />
+        <Route path="/settings/categories" element={<Categories />} />
         <Route path="/verify-otp" element={<VerifyOtp />} />
         <Route path="/reset-password" element={<ResetPassword />} />
 

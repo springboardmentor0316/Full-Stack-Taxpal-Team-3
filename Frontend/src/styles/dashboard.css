@@ -15,6 +15,8 @@
   background: linear-gradient(135deg, #5b2cff, #6c63ff);
   color: white;
   padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
 }
 
 .logo {
@@ -28,10 +30,77 @@
   opacity: 0.9;
 }
 
+.sidebar nav {
+  flex: 1;
+}
+
 .sidebar nav a:hover,
 .sidebar nav .active {
   font-weight: bold;
   opacity: 1;
+}
+
+/* Sidebar footer (Settings at bottom like screenshot) */
+.settings-sidebar-footer {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.settings-user {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.settings-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+}
+
+.settings-user-name {
+  font-weight: 800;
+  font-size: 12px;
+}
+
+.settings-user-email {
+  font-size: 11px;
+  opacity: 0.9;
+}
+
+.settings-footer-links {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.settings-footer-link {
+  border: none;
+  background: transparent;
+  color: white;
+  cursor: pointer;
+  font: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  opacity: 0.95;
+}
+
+.settings-footer-link:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+.settings-footer-link.active {
+  font-weight: 800;
 }
 
 /* MAIN CONTENT */

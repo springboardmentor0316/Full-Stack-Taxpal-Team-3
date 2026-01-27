@@ -1,0 +1,89 @@
+/* Page wrapper */
+.expenses-page {
+  padding: 30px;
+  font-family: "Inter", Arial, sans-serif;
+}
+
+/* Header */
+.expenses-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.expenses-header h2 {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+/* Add button */
+.add-expense-btn,
+.add-btn {
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: none;
+  background: #111;
+  color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+
+/* Amount column */
+.amount-col {
+  text-align: right;
+}
+
+/* Income / Expense colors */
+.amount.income {
+  color: #16a34a;
+  font-weight: 600;
+}
+
+.amount.expense {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+/* Empty row */
+.transaction-table tbody td[colspan] {
+  text-align: center;
+  color: #9ca3af;
+  padding: 30px;
+}
+.transaction-table {
+  width: 100%;
+  background: white;
+  border-radius: 12px;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.transaction-table th,
+.transaction-table td {
+  padding: 14px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.transaction-table th {
+  color: #666;
+  font-weight: 600;
+}
+
+.red {
+  color: red;
+  font-weight: 600;
+}
+
+.add-btn {
+  width: 100%;
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: 10px;
+  background: black;
+  color: white;
+  border: none;
+  cursor: pointer;
+}

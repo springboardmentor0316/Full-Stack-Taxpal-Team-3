@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiEdit2, FiX, FiPlus, FiUser, FiTag, FiBell, FiLock, FiSettings } from "react-icons/fi";
-import "../styles/dashboard.css";
+import Sidebar from "../components/Sidebar";
 import "../styles/categories.css";
 
 function makeId() {
@@ -116,44 +116,30 @@ function Categories() {
   const removeCategory = (id) => {
     setCurrent((prev) => prev.filter((c) => c.id !== id));
   };
+useEffect(() => {
+  const savedExpense = localStorage.getItem("expenseCategories");
+  const savedIncome = localStorage.getItem("incomeCategories");
+
+  if (savedExpense) setExpenseCategories(JSON.parse(savedExpense));
+  if (savedIncome) setIncomeCategories(JSON.parse(savedIncome));
+}, []);
+useEffect(() => {
+  localStorage.setItem(
+    "expenseCategories",
+    JSON.stringify(expenseCategories)
+  );
+}, [expenseCategories]);
+
+useEffect(() => {
+  localStorage.setItem(
+    "incomeCategories",
+    JSON.stringify(incomeCategories)
+  );
+}, [incomeCategories]);
 
   return (
-    <div className="dashboard settings-shell">
-      <aside className="sidebar">
-        <h2 className="logo">TaxPal</h2>
-        <nav>
-          <a onClick={() => navigate("/dashboard")}>Dashboard</a>
-          <a>Transactions</a>
-          <a onClick={() => navigate("/budgets")}>Budgets</a>
-          <a>Tax Estimator</a>
-          <a>Reports</a>
-        </nav>
-
-        <div className="settings-sidebar-footer">
-          <div className="settings-user">
-            <div className="settings-avatar" aria-hidden="true">
-              {userInitials}
-            </div>
-            <div className="settings-user-meta">
-              <div className="settings-user-name">{userName}</div>
-              <div className="settings-user-email">{userEmail}</div>
-            </div>
-          </div>
-
-          <div className="settings-footer-links">
-            <button
-              className="settings-footer-link active"
-              type="button"
-              onClick={() => navigate("/settings/categories")}
-            >
-              <FiSettings /> Settings
-            </button>
-            <button className="settings-footer-link" type="button" onClick={logout}>
-              <FiX /> Logout
-            </button>
-          </div>
-        </div>
-      </aside>
+    <div className="dashboard">
+        <Sidebar />
 
       <main className="content settings-content">
         <div className="settings-header">
@@ -300,6 +286,7 @@ function Categories() {
         ) : null}
       </main>
     </div>
+    
   );
 }
 

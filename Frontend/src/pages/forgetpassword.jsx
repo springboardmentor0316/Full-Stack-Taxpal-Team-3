@@ -26,36 +26,38 @@ function ForgetPassword() {
       return;
     }
   
-    try {
-      const res = await fetch(
-        "http://127.0.0.1:4000/api/users/forgot-password",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email }),
-        }
-      );
-  
-      const data = await res.json();
-  
-      if (!res.ok) {
-        setError(data.message || "Something went wrong");
-        return;
-      }
-  
-      // ✅ OTP sent
-      setSuccess("OTP sent to your email");
-  
-      // ✅ go to Verify OTP page (NOT reset password)
-      setTimeout(() => {
-        navigate("/verify-otp", { state: { email } });
-      }, 800);
-  
-    } catch (err) {
-      setError("Server error. Please start backend.");
+try {
+  const res = await fetch(
+    "http://localhost:4000/api/users/forgot-password",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email }),
     }
+  );
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    setError(data.message || data.error || "Something went wrong");
+    return;
+  }
+
+  // ✅ success
+  setSuccess(data.message || "OTP sent to your email");
+
+  setTimeout(() => {
+    navigate("/verify-otp", { state: { email } });
+  }, 800);
+
+} catch (err) {
+  // fetch error (network / backend down)
+  setError("Unable to connect to server");
+}
+
+
   };
   
 

@@ -1,189 +1,74 @@
-import { useState } from "react";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
-import "../styles/signup.css";
+import {
+FaHome,
+FaMoneyBillWave,
+FaReceipt,
+FaChartPie,
+FaCog,
+FaSignOutAlt,
+FaUserCircle,
+} from "react-icons/fa";
+import { NavLink, useNavigate } from "react-router-dom";
+import "../styles/dashboard.css";
 
-function Signup() {
-  const navigate = useNavigate();
+function Sidebar() {
+const navigate = useNavigate();
 
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+const handleLogout = () => {
+localStorage.removeItem("token");
+localStorage.removeItem("userId");
+navigate("/");
+};
 
-  // ✅ EXACT schema fields
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [country, setCountry] = useState("");
-  const [incomeBracket, setIncomeBracket] = useState("");
+return (
+<aside className="sidebar">
+<div>
+<h2 className="logo">TaxPal</h2>
+<p className="tagline">Financial Manager</p>
 
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+{/* 🔥 TEXT LINKS (same as Dashboard) */}  
+    <nav className="menu">  
+      <NavLink to="/dashboard" className="menu-link">  
+        <FaHome /> Dashboard  
+      </NavLink>  
 
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+      <NavLink to="/income" className="menu-link">  
+        <FaMoneyBillWave /> Income  
+      </NavLink>  
 
-  const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      <NavLink to="/expenses" className="menu-link">  
+        <FaReceipt /> Expenses  
+      </NavLink>  
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setSuccess("");
+      <NavLink to="/budgets" className="menu-link">  
+        <FaChartPie /> Budgets  
+      </NavLink>  
 
-    // ✅ validations
-    if (!name || !email || !password || !confirmPassword || !country) {
-      setError("All required fields must be filled");
-      return;
-    }
+      <NavLink to="/reports" className="menu-link">  
+        <FaReceipt /> Reports  
+      </NavLink>  
 
-    if (!isValidEmail(email)) {
-      setError("Please enter a valid email address");
-      return;
-    }
+      <NavLink to="/settings/categories" className="menu-link">  
+        <FaCog /> Settings  
+      </NavLink>  
+    </nav>  
+  </div>  
 
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
+  <div className="sidebar-footer">  
+    <div className="profile">  
+      <FaUserCircle size={36} />  
+      <div>  
+        <p className="name">Manasvi</p>  
+        <p className="email">manasvi@gmail.com</p>  
+      </div>  
+    </div>  
 
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters");
-      return;
-    }
+    <button className="logout" onClick={handleLogout}>  
+      <FaSignOutAlt /> Logout  
+    </button>  
+  </div>  
+</aside>
 
-    // ✅ payload exactly matching backend schema
-    const signupData = {
-      name,
-      email,
-      password,
-      country,
-      income_bracket: incomeBracket || undefined, // optional
-    };
-
-    try {
-      const res = await fetch("http://127.0.0.1:4000/api/users/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(signupData),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.message || "Registration failed");
-        return;
-      }
-
-      setSuccess(data.message || "Account created successfully!");
-
-      // ✅ redirect to login after success
-      setTimeout(() => {
-        navigate("/");
-      }, 800);
-    } catch (err) {
-      setError("Server error. Please try again.");
-    }
-  };
-
-  return (
-    <div className="main">
-      <div className="left-panel">
-        <h1>
-          TaxPal{" "}
-          <span className="highlight">
-            Personal Finance & <br />Tax Estimator For Freelancers
-          </span>
-        </h1>
-
-        <div className="illustration">
-          <img src="/assets/illustration1.png" alt="illustration" />
-        </div>
-      </div>
-
-      <div className="right-panel">
-        <h2>Create Account</h2>
-
-        <form className="form" onSubmit={handleSubmit}>
-          {/* ✅ FULL NAME */}
-          <input
-            placeholder="Full Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-
-          {/* ✅ EMAIL */}
-          <input
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-
-          {/* ✅ COUNTRY */}
-          <input
-            placeholder="Country"
-            value={country}
-            onChange={(e) => setCountry(e.target.value)}
-          />
-
-          {/* ✅ INCOME BRACKET (optional) */}
-          <select
-            className="input-field"
-            value={incomeBracket}
-            onChange={(e) => setIncomeBracket(e.target.value)}
-          >
-            <option value="">Select Income Bracket (Optional)</option>
-            <option value="Low">Low</option>
-            <option value="Middle">Middle</option>
-            <option value="High">High</option>
-          </select>
-
-          {/* ✅ PASSWORD */}
-          <div className="password-box">
-            <input
-              type={showPassword ? "text" : "password"}
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="new-password"
-            />
-            <span
-              className="eye-icon"
-              onClick={() => setShowPassword(!showPassword)}
-            >
-              {showPassword ? <FaEyeSlash /> : <FaEye />}
-            </span>
-          </div>
-
-          {/* ✅ CONFIRM PASSWORD */}
-          <div className="password-box">
-            <input
-              type={showConfirmPassword ? "text" : "password"}
-              placeholder="Confirm Password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              autoComplete="new-password"
-            />
-            <span
-              className="eye-icon"
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            >
-              {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
-            </span>
-          </div>
-
-          {error && <p style={{ color: "red" }}>{error}</p>}
-          {success && <p style={{ color: "green" }}>{success}</p>}
-
-          <button type="submit">Create Account</button>
-
-          <p className="login">
-            Already have an account?{" "}
-            <span onClick={() => navigate("/")}>Login</span>
-          </p>
-        </form>
-      </div>
-    </div>
-  );
+);
 }
 
-export default Signup;
+export default Sidebar;

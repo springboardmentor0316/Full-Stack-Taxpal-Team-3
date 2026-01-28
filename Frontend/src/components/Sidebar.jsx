@@ -6,8 +6,9 @@ import {
   FaCog,
   FaSignOutAlt,
   FaUserCircle,
+  FaCalculator,          // ✅ ADDED
 } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import "../styles/dashboard.css";
 
 function Sidebar() {
@@ -25,30 +26,36 @@ function Sidebar() {
         <h2 className="logo">TaxPal</h2>
         <p className="tagline">Financial Manager</p>
 
+        {/* 🔥 TEXT LINKS */}
         <nav className="menu">
-          <button onClick={() => navigate("/dashboard")}>
+          <NavLink to="/dashboard" className="menu-link">
             <FaHome /> Dashboard
-          </button>
+          </NavLink>
 
-          <button onClick={() => navigate("/income")}>
+          <NavLink to="/income" className="menu-link">
             <FaMoneyBillWave /> Income
-          </button>
+          </NavLink>
 
-          <button onClick={() => navigate("/expenses")}>
+          <NavLink to="/expenses" className="menu-link">
             <FaReceipt /> Expenses
-          </button>
+          </NavLink>
 
-          <button onClick={() => navigate("/budgets")}>
+          <NavLink to="/budgets" className="menu-link">
             <FaChartPie /> Budgets
-          </button>
+          </NavLink>
 
-          <button onClick={() => navigate("/reports")}>
+          {/* ✅ TAX ESTIMATOR (NAVBAR ONLY) */}
+          <NavLink to="#" className="menu-link">
+            <FaCalculator /> Tax Estimator
+          </NavLink>
+
+          <NavLink to="/reports" className="menu-link">
             <FaReceipt /> Reports
-          </button>
+          </NavLink>
 
-          <button onClick={() => navigate("/settings/categories")}>
+          <NavLink to="/settings/categories" className="menu-link">
             <FaCog /> Settings
-          </button>
+          </NavLink>
         </nav>
       </div>
 

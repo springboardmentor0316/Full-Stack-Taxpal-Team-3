@@ -9,8 +9,8 @@
 /* ===== HEADER ===== */
 .budget-header {
   display: flex;
-  gap: 50px;
-  align-items: flex-start;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 22px;
 }
 
@@ -80,7 +80,6 @@
 .budget-table-card {
   background: #fff;
   border-radius: 18px;
-  width: 100%;
   padding: 8px 0;
   box-shadow: 0 4px 16px rgba(0,0,0,0.06);
 }
@@ -136,92 +135,23 @@
 }
 
 /* ===== ACTION BUTTONS ===== */
-.add-budget-btn{
-  width:auto;
-  padding: 15px 30px;
-  font-size: 13px;
-  font-weight: 600;
+.budget-table button {
+  border: none;
   border-radius: 10px;
-  align-self: flex-start;
-  white-space: nowrap;
-  margin-top: 4px;
-}
-
-/* ===== ACTION BUTTONS (CLEAN STYLE) ===== */
-.budget-table td:last-child {
-  display: flex;
-  gap: 16px;
-  align-items: center;
-}
-
-/* ===== ACTION COLUMN FIX ===== */
-/* ===== ACTION COLUMN – FINAL FIX ===== */
-.budget-table th:last-child,
-.budget-table td:last-child {
-  text-align: left;      /* ← key fix */
-  padding-left: 16px;
-}
-
-/* Buttons inline, no push */
-.budget-table td:last-child button {
-  display: inline-block;
-  margin-right: 10px;
-}
-
-/* ===== BUTTON STYLE ===== */
-.budget-table button {
-  background: #f2f4f8;
-  border: 1px solid #e0e3eb;
-  border-radius: 8px;
-  padding: 6px 14px;
-  font-size: 12px;
+  padding: 8px 14px;
   font-weight: 600;
   cursor: pointer;
+  margin-right: 8px;
 }
 
-/* Edit */
-.budget-table button:not(.danger) {
-  color: #2d7ff9;
-}
-
-/* Delete */
 .budget-table button.danger {
-  color: #e74c3c;
-  background: #fff5f5;
-  border-color: #ffd6d6;
+  background: #111;
+  color: #fff;
 }
 
-/* Button wrapper stays inline */
-.budget-table td:last-child button {
-  margin: 0 6px;
-}
-
-/* ===== ACTION BUTTON STYLE ===== */
-.budget-table button {
-  background: #f2f4f8;
-  border: 1px solid #e0e3eb;
-  border-radius: 8px;
-  padding: 6px 14px;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-/* Edit */
 .budget-table button:not(.danger) {
+  background: #eef2ff;
   color: #2d7ff9;
-}
-
-/* Delete */
-.budget-table button.danger {
-  color: #e74c3c;
-  background: #fff5f5;
-  border-color: #ffd6d6;
-}
-
-/* Hover (subtle, professional) */
-.budget-table button:hover {
-  opacity: 0.9;
 }
 
 /* ===== EMPTY STATE ===== */
@@ -241,14 +171,10 @@
 }
 
 .page-content {
-  margin-left: 260px;
-  width:calc(100vw - 260px);
-  box-sizing:border-box;
-  padding:32px 40px;
-  min-height:100vh;
+  flex: 1;
+  padding: 32px 40px;
   overflow-y: auto;
   background: #f5f6fa;
-  
 }
 
 

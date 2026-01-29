@@ -1,4 +1,4 @@
-dashboard.jsx import "../styles/dashboard.css";
+import "../styles/dashboard.css";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import ExpenseModal from "../components/ExpenseModal";

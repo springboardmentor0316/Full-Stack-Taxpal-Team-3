@@ -10,7 +10,7 @@ import Expenses from "./pages/expenses";
 import Income from "./pages/income";
 import Budgets from "./pages/budgets";
 import Categories from "./pages/categories";
-
+import Transactions from "./pages/transactions";
 function App() {
   return (
     <BrowserRouter>
@@ -22,10 +22,10 @@ function App() {
         <Route path="/verify-code" element={<VerificationCode />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/dashboard" element={<Dashboard />} />
-     
-           <Route path="/income" element={<Income />} />
-             <Route path="/expenses" element={<Expenses />} />
-                 <Route path="/budgets" element={<Budgets />} />
+        <Route path="/transactions" element={<Transactions />} />
+        <Route path="/income" element={<Income />} />
+        <Route path="/expenses" element={<Expenses />} />
+        <Route path="/budgets" element={<Budgets />} />
         <Route path="/settings/categories" element={<Categories />} />
       
       

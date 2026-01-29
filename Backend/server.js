@@ -1,6 +1,5 @@
 const express = require('express')
 require("dotenv").config();
-const connectDB = require("./utils/db");
 
 // create the object of the express server
 const app = express()
@@ -17,10 +16,7 @@ mongoose
     console.error("MongoDB connection failed:", err.message);
   });
 
-//inits mongoDB connection
-require('./utils/db')
 
-//middlewares
 //reads json
 app.use(express.json())
 

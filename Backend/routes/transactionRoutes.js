@@ -5,6 +5,7 @@ const {
   addExpense,
   getIncome,
   getExpenses,
+  getAllTransactions,
 } = require("../controllers/transactionController");
 
 const router = express.Router();
@@ -16,5 +17,7 @@ router.get("/income", verifyToken, getIncome);
 // EXPENSE
 router.post("/expense", verifyToken, addExpense);
 router.get("/expense", verifyToken, getExpenses);
+// ALL TRANSACTIONS (income + expense)
+router.get("/", verifyToken, getAllTransactions);
 
 module.exports = router;

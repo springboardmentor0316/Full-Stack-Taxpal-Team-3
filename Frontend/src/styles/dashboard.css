@@ -48,29 +48,49 @@ body {
 }
 
 .logo {
-  font-size: 22px;
+  font-size: 27px;
   margin-bottom: 4px;
 }
 
 .tagline {
-  font-size: 12px;
+  font-size: 17px;
   opacity: 0.8;
 }
 
 .menu {
   margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px 14px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.06);
 }
 
-.menu a,
 .menu button {
-  background: #2563eb;
-  color: #e5e7eb;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: none;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
 }
 
-.menu a:hover,
-.menu a.active {
-  color: #fff;
+.menu button:hover {
+  background: rgba(255, 255, 255, 0.14);
 }
+
+.menu button:active {
+  transform: translateY(1px);
+}
+
 
 .sidebar-footer {
   margin-top: auto;
@@ -126,6 +146,12 @@ body {
   justify-content: center;
   max-width: 420px;
 }
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
 
 .search-wrapper {
   position: relative;
@@ -140,6 +166,8 @@ body {
   background: #f5f7fb;
   border-radius: 999px;
   font-size: 14px;
+  text-align: center;
+  margin:3px;
 }
 
 .search-input:focus {
@@ -154,6 +182,7 @@ body {
   transform: translateY(-50%);
   color: #9ca3af;
   pointer-events: none;
+ 
 }
 
 /* ================= RESPONSIVE ================= */
@@ -172,6 +201,20 @@ body {
     width: calc(100% - 220px);
   }
 }
+.icon-btn {
+  background: #000;
+  color: #fff;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin: 2px;
+}
+
 /* CARDS */ 
 .cards { 
   display: grid;
@@ -180,20 +223,34 @@ body {
    margin-bottom: 30px; 
   } 
   .card {
-     background: var(--card); 
-     padding: 20px;
-      border-radius: 14px; 
-      box-shadow: 0 10px 25px rgba(0,0,0,0.05); 
-    } 
+  background: var(--card);
+  padding: 20px;
+  border-radius: 14px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+  margin-top: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;   /* 👈 aligns all content cleanly */
+  gap: 6px;                  /* 👈 consistent spacing */
+}
+
     .card-icon { 
       font-size: 28px; 
       color: var(--primary); 
       margin-bottom: 10px; 
     } 
-    .amount { 
-      font-size: 22px; 
-      font-weight: bold; 
-    } 
+   .card h3 {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.amount {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+ 
     .income { 
       color: #22c55e; 
     }
@@ -239,3 +296,8 @@ body {
         border-collapse: collapse; 
       } 
       .transactions-table th { text-align: left; font-size: 13px; color: var(--muted); font-weight: 500; padding-bottom: 12px; } .transactions-table td { padding: 14px 0; border-top: 1px solid #e5e7eb; font-size: 14px; color: var(--text); } .transactions-table .amount.income { color: #16a34a; font-weight: 600; } .transactions-table .amount.expense { color: #dc2626; font-weight: 600; } .type-badge { padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 500; } .type-badge.income { background: #dcfce7; color: #166534; } .type-badge.expense { background: #fee2e2; color: #991b1b; } .chart-card { background: white; border-radius: 14px; padding: 20px; height: 360px; /* 🔥 same height as bar chart card */ display: flex; flex-direction: column; } .chart-title { font-size: 16px; font-weight: 700; margin-bottom: 10px; } .pie-wrapper { flex: 1; /* 🔥 fills remaining space */ display: flex; align-items: center; justify-content: center; position: relative; } .charts-row { display: grid; grid-template-columns: 1.2fr 1fr; gap: 20px; margin-top: 20px; }
+      /* Align Amount column properly */
+.transactions-table th:nth-child(4),
+.transactions-table td:nth-child(4) {
+  text-align: left;
+}

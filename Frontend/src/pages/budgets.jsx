@@ -83,7 +83,7 @@ function Budgets() {
       <main className="page-content">
         {/* ===== HEADER ===== */}
         <div className="budget-header">
-          <div>
+          <div className="budget-header-text">
             <h1>Budgets</h1>
             <p className="subtitle">Set budgets and track spending</p>
           </div>
@@ -169,24 +169,26 @@ function Budgets() {
                         </span>
                       </td>
                       <td>
-                        <button
-                          onClick={() => {
-                            setEditingBudget(b);
-                            setOpenBudgetModal(true);
-                          }}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          className="danger"
-                          onClick={() =>
-                            setBudgets((prev) =>
-                              prev.filter((x) => x.id !== b.id)
-                            )
-                          }
-                        >
-                          Delete
-                        </button>
+                        <div className="budget-actions">
+                          <button
+                            onClick={() => {
+                              setEditingBudget(b);
+                              setOpenBudgetModal(true);
+                            }}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            className="danger"
+                            onClick={() =>
+                              setBudgets((prev) =>
+                                prev.filter((x) => x.id !== b.id)
+                              )
+                            }
+                          >
+                            Delete
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );

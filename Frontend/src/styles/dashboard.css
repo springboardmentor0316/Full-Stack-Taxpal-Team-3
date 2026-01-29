@@ -61,34 +61,22 @@ body {
   margin-top: 30px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  padding: 18px 14px;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.06);
+  gap: 18px;
 }
 
-.menu button {
-  width: 100%;
+.menu span {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 14px 16px;
-  border: none;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.08);
-  color: #ffffff;
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 16px;          /* 👈 slightly bigger text */
+  font-weight: 500;
+  color: #e5e7eb;
   cursor: pointer;
-  text-align: left;
+  padding-left: 4px;
 }
 
-.menu button:hover {
-  background: rgba(255, 255, 255, 0.14);
-}
-
-.menu button:active {
-  transform: translateY(1px);
+.menu span:hover {
+  color: #ffffff;
 }
 
 

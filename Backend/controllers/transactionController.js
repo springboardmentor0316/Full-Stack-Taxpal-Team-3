@@ -5,7 +5,7 @@ exports.addIncome = async (req, res) => {
     const { description, amount, category, date, notes } = req.body;
 
     const newIncome = await Transaction.create({
-      userId: req.user.userId, // ✅ CORRECT & MATCHES middleware
+      userId: req.user.userId, 
       description,
       amount,
       category,
@@ -72,5 +72,17 @@ exports.getExpenses = async (req, res) => {
   } catch (error) {
     console.error("Get expenses error:", error);
     res.status(500).json({ message: "Failed to fetch expenses" });
+  }
+};
+exports.getAllTransactions = async (req, res) => {
+  try {
+    const transactions = await Transaction.find({
+      userId: req.user.userId,
+    }).sort({ date: -1 });
+
+    res.json(transactions);
+  } catch (error) {
+    console.error("Get transactions error:", error);
+    res.status(500).json({ message: "Failed to fetch transactions" });
   }
 };

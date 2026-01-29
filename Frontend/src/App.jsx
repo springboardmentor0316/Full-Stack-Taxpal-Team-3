@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/login";
 import Signup from "./pages/signup";
 import ForgetPassword from "./pages/forgetpassword";
@@ -11,7 +11,7 @@ import Income from "./pages/income";
 import Budgets from "./pages/budgets";
 import Categories from "./pages/categories";
 import Transactions from "./pages/transactions";
-import TaxEstimator from "./pages/taxestimator";
+import TaxEstimator from "./pages/TaxEstimator";
 
 
 
@@ -30,6 +30,7 @@ function App() {
         <Route path="/income" element={<Income />} />
         <Route path="/expenses" element={<Expenses />} />
         <Route path="/budgets" element={<Budgets />} />
+        <Route path="/settings" element={<Navigate to="/settings/categories" replace />} />
         <Route path="/settings/categories" element={<Categories />} />
         <Route path="/tax-estimator" element={<TaxEstimator />} />
 

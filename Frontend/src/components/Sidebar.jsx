@@ -49,7 +49,7 @@ function Sidebar() {
     <FaReceipt /> Reports
   </span>
 
-  <span onClick={() => navigate("/settings")}>
+  <span onClick={() => navigate("/settings/categories")}>
     <FaCog /> Settings
   </span>
 </nav>

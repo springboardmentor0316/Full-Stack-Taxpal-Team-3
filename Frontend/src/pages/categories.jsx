@@ -13,10 +13,7 @@ const DEFAULT_EXPENSE_CATEGORIES = [
   { id: "e2", name: "Office Rent", color: "#2d7ff9" },
   { id: "e3", name: "Software Subscriptions", color: "#7c4dff" },
   { id: "e4", name: "Professional Development", color: "#2fb3a3" },
-  { id: "e5", name: "Marketing", color: "#f39c12" },
-  { id: "e6", name: "Travel", color: "#e056fd" },
-  { id: "e7", name: "Meals & Entertainment", color: "#4b7bec" },
-  { id: "e8", name: "Utilities", color: "#ff4757" },
+  
 ];
 
 const DEFAULT_INCOME_CATEGORIES = [

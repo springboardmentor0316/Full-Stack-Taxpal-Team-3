@@ -20,52 +20,55 @@ function Sidebar() {
   };
 
   return (
-    <aside className="sidebar">
-      <div>
-        <h2 className="logo">TaxPal</h2>
-        <p className="tagline">Financial Manager</p>
+      <aside className="sidebar">
+        <div>
+          <h2 className="logo">TaxPal</h2>
+          <p className="tagline">Financial Manager</p>
 
-        <nav className="menu">
-          <button onClick={() => navigate("/dashboard")}>
-            <FaHome /> Dashboard
-          </button>
+  <nav className="menu">
+  <span onClick={() => navigate("/dashboard")}>
+    <FaHome /> Dashboard
+  </span>
 
-          <button onClick={() => navigate("/income")}>
-            <FaMoneyBillWave /> Income
-          </button>
+  <span onClick={() => navigate("/transactions")}>
+    <FaReceipt /> Transactions
+  </span>
 
-          <button onClick={() => navigate("/expenses")}>
-            <FaReceipt /> Expenses
-          </button>
+  <span onClick={() => navigate("/budgets")}>
+    <FaReceipt /> Budgets
+  </span>
 
-          <button onClick={() => navigate("/budgets")}>
-            <FaChartPie /> Budgets
-          </button>
+    
+  <span onClick={() => navigate("/taxestimator")}>
+    <FaMoneyBillWave /> Tax Estimator
+  </span>
 
-          <button onClick={() => navigate("/reports")}>
-            <FaReceipt /> Reports
-          </button>
+  <span onClick={() => navigate("/reports")}>
+    <FaReceipt /> Reports
+  </span>
 
-          <button onClick={() => navigate("/settings/categories")}>
-            <FaCog /> Settings
-          </button>
-        </nav>
-      </div>
+  <span onClick={() => navigate("/settings")}>
+    <FaCog /> Settings
+  </span>
+</nav>
 
-      <div className="sidebar-footer">
-        <div className="profile">
-          <FaUserCircle size={36} />
-          <div>
-            <p className="name">Manasvi</p>
-            <p className="email">manasvi@gmail.com</p>
-          </div>
+
         </div>
 
-        <button className="logout" onClick={handleLogout}>
-          <FaSignOutAlt /> Logout
-        </button>
-      </div>
-    </aside>
+        <div className="sidebar-footer">
+          <div className="profile">
+            <FaUserCircle />
+            <div>
+              <p className="name">Manasvi</p>
+              <p className="email">manasvi@gmail.com</p>
+            </div>
+          </div>
+
+          <button className="logout" onClick={handleLogout}>
+            <FaSignOutAlt /> Logout
+          </button>
+        </div>
+      </aside>
   );
 }
 

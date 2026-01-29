@@ -39,9 +39,11 @@ function Sidebar() {
   </span>
 
     
-  <span onClick={() => navigate("/taxestimator")}>
+  <span onClick={() => navigate("/tax-estimator")}>
     <FaMoneyBillWave /> Tax Estimator
   </span>
+
+
 
   <span onClick={() => navigate("/reports")}>
     <FaReceipt /> Reports

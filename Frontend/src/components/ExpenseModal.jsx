@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "../styles/expenseModal.css";
 
-function ExpenseModal({ isOpen, onClose, onSuccess }) {
+function ExpenseModal({ isOpen, onClose, onSuccess, initialData = null, readOnly = false }) {
   const today = new Date().toISOString().split("T")[0];
 
   const [formData, setFormData] = useState({
@@ -16,16 +16,30 @@ function ExpenseModal({ isOpen, onClose, onSuccess }) {
 
   useEffect(() => {
     if (isOpen) {
-      setFormData({
-        description: "",
-        amount: "",
-        category: "",
-        date: today,
-        notes: "",
-      });
+      if (initialData) {
+        const initialDate = initialData.date
+          ? new Date(initialData.date).toISOString().split("T")[0]
+          : today;
+
+        setFormData({
+          description: initialData.description || "",
+          amount: initialData.amount ?? "",
+          category: initialData.category || "",
+          date: initialDate,
+          notes: initialData.notes || "",
+        });
+      } else {
+        setFormData({
+          description: "",
+          amount: "",
+          category: "",
+          date: today,
+          notes: "",
+        });
+      }
       setError("");
     }
-  }, [isOpen]);
+  }, [isOpen, initialData, today]);
 
   if (!isOpen) return null;
 
@@ -38,6 +52,11 @@ function ExpenseModal({ isOpen, onClose, onSuccess }) {
     e.preventDefault();
     setError("");
 
+    if (readOnly) {
+      onClose();
+      return;
+    }
+
     if (!formData.description || !formData.amount || !formData.category) {
       setError("Please fill Description, Amount and Category");
       return;
@@ -46,26 +65,28 @@ function ExpenseModal({ isOpen, onClose, onSuccess }) {
     try {
       const token = localStorage.getItem("token");
 
-      const res = await fetch(
-        "http://localhost:4000/api/transactions/expense",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            description: formData.description,
-            amount: Number(formData.amount),
-            category: formData.category,
-            date: formData.date,
-            notes: formData.notes,
-          }),
-        }
-      );
+      const isEditing = Boolean(initialData?._id);
+      const url = isEditing
+        ? `http://localhost:4000/api/transactions/${initialData._id}`
+        : "http://localhost:4000/api/transactions/expense";
+
+      const res = await fetch(url, {
+        method: isEditing ? "PUT" : "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          description: formData.description,
+          amount: Number(formData.amount),
+          category: formData.category,
+          date: formData.date,
+          notes: formData.notes,
+        }),
+      });
 
       if (!res.ok) {
-        setError("Failed to save expense");
+        setError(isEditing ? "Failed to update expense" : "Failed to save expense");
         return;
       }
 
@@ -81,14 +102,28 @@ function ExpenseModal({ isOpen, onClose, onSuccess }) {
       <div className="modalBox" onClick={(e) => e.stopPropagation()}>
         <div className="modalHeader">
           <div>
-            <h2>Record New Expense</h2>
-            <p>Add details about your expense to track your spending better.</p>
+            <h2>
+              {readOnly
+                ? "Expense Details"
+                : initialData
+                  ? "Edit Expense"
+                  : "Record New Expense"}
+            </h2>
+            <p>
+              {readOnly
+                ? "Review your expense transaction details."
+                : initialData
+                  ? "Update details about your expense transaction."
+                  : "Add details about your expense to track your spending better."}
+            </p>
           </div>
           <button className="closeBtn" onClick={onClose}>✕</button>
         </div>
 
         <form className="modalForm" onSubmit={handleSubmit}>
-          <h3>Add Expense</h3>
+          <h3>
+            {readOnly ? "Expense" : initialData ? "Edit Expense" : "Add Expense"}
+          </h3>
 
           <div className="twoCol">
             <div className="field">
@@ -97,6 +132,7 @@ function ExpenseModal({ isOpen, onClose, onSuccess }) {
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
+                disabled={readOnly}
               />
             </div>
 
@@ -107,6 +143,7 @@ function ExpenseModal({ isOpen, onClose, onSuccess }) {
                 type="number"
                 value={formData.amount}
                 onChange={handleChange}
+                disabled={readOnly}
               />
             </div>
           </div>
@@ -118,6 +155,7 @@ function ExpenseModal({ isOpen, onClose, onSuccess }) {
                 name="category"
                 value={formData.category}
                 onChange={handleChange}
+                disabled={readOnly}
               >
                 <option value="">Select a category</option>
                 <option value="Food">Food</option>
@@ -135,6 +173,7 @@ function ExpenseModal({ isOpen, onClose, onSuccess }) {
                 type="date"
                 value={formData.date}
                 onChange={handleChange}
+                disabled={readOnly}
               />
             </div>
           </div>
@@ -145,6 +184,7 @@ function ExpenseModal({ isOpen, onClose, onSuccess }) {
               name="notes"
               value={formData.notes}
               onChange={handleChange}
+              disabled={readOnly}
             />
           </div>
 
@@ -152,11 +192,13 @@ function ExpenseModal({ isOpen, onClose, onSuccess }) {
 
           <div className="modalActions">
             <button type="button" className="cancelBtn" onClick={onClose}>
-              Cancel
+              {readOnly ? "Close" : "Cancel"}
             </button>
-            <button type="submit" className="saveBtn">
-              Save
-            </button>
+            {!readOnly && (
+              <button type="submit" className="saveBtn">
+                {initialData ? "Update" : "Save"}
+              </button>
+            )}
           </div>
         </form>
       </div>

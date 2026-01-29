@@ -9,6 +9,7 @@ function Expenses() {
   const [expenses, setExpenses] = useState([]);
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
+  const [activeExpense, setActiveExpense] = useState(null);
 
   // 🔹 fetch expenses from backend
   const fetchExpenses = async () => {
@@ -30,6 +31,33 @@ function Expenses() {
   useEffect(() => {
     fetchExpenses();
   }, []);
+
+  const closeActive = () => setActiveExpense(null);
+
+  const handleDelete = async (item) => {
+    const ok = window.confirm("Delete this expense transaction?");
+    if (!ok) return;
+
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(
+        `http://localhost:4000/api/transactions/${item._id}`,
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (!res.ok) {
+        console.error("Failed to delete expense");
+        return;
+      }
+
+      fetchExpenses();
+    } catch (err) {
+      console.error("Failed to delete expense");
+    }
+  };
 
   // 🔹 totals
   const totalExpense = expenses.reduce((sum, e) => sum + e.amount, 0);
@@ -149,10 +177,20 @@ function Expenses() {
                     </td>
 
                     <td className="actions-col">
-                      <button className="icon-btn edit">
+                      <button
+                        className="icon-btn edit"
+                        type="button"
+                        onClick={() => setActiveExpense(item)}
+                        title="Edit"
+                      >
                         <FaEdit />
                       </button>
-                      <button className="icon-btn delete">
+                      <button
+                        className="icon-btn delete"
+                        type="button"
+                        onClick={() => handleDelete(item)}
+                        title="Delete"
+                      >
                         <FaTrash />
                       </button>
                     </td>
@@ -169,6 +207,15 @@ function Expenses() {
             isOpen={openExpenseModal}
             onClose={() => setOpenExpenseModal(false)}
             onSuccess={fetchExpenses}
+          />
+        )}
+
+        {activeExpense && (
+          <ExpenseModal
+            isOpen={Boolean(activeExpense)}
+            onClose={closeActive}
+            onSuccess={fetchExpenses}
+            initialData={activeExpense}
           />
         )}
       </main>

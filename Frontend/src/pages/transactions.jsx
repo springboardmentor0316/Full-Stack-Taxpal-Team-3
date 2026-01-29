@@ -10,6 +10,8 @@ function Transactions() {
   const [openIncomeModal, setOpenIncomeModal] = useState(false);
   const [openExpenseModal, setOpenExpenseModal] = useState(false);
   const [search, setSearch] = useState("");
+  const [activeTransaction, setActiveTransaction] = useState(null);
+  const [activeMode, setActiveMode] = useState("edit");
 const totalIncome = transactions
   .filter(t => t.type === "income")
   .reduce((sum, t) => sum + t.amount, 0);
@@ -31,6 +33,41 @@ const totalExpense = transactions
       if (res.ok) setTransactions(data);
     } catch (err) {
       console.error("Failed to fetch transactions");
+    }
+  };
+
+  const openEdit = (t) => {
+    setActiveTransaction(t);
+    setActiveMode("edit");
+  };
+
+  const closeActive = () => {
+    setActiveTransaction(null);
+    setActiveMode("edit");
+  };
+
+  const handleDelete = async (t) => {
+    const ok = window.confirm("Delete this transaction?");
+    if (!ok) return;
+
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(
+        `http://localhost:4000/api/transactions/${t._id}`,
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (!res.ok) {
+        console.error("Failed to delete transaction");
+        return;
+      }
+
+      fetchTransactions();
+    } catch (err) {
+      console.error("Failed to delete transaction");
     }
   };
 
@@ -135,10 +172,20 @@ const totalExpense = transactions
                       {t.amount.toLocaleString()}
                     </td>
                     <td className="actions-col">
-                      <button className="icon-btn edit">
+                      <button
+                        className="icon-btn edit"
+                        type="button"
+                        onClick={() => openEdit(t)}
+                        title="Edit"
+                      >
                         <FaEdit />
                       </button>
-                      <button className="icon-btn delete">
+                      <button
+                        className="icon-btn delete"
+                        type="button"
+                        onClick={() => handleDelete(t)}
+                        title="Delete"
+                      >
                         <FaTrash />
                       </button>
                     </td>
@@ -165,6 +212,26 @@ const totalExpense = transactions
     onSuccess={fetchTransactions}
   />
 )}
+
+        {activeTransaction?.type === "income" && (
+          <IncomeModal
+            isOpen={Boolean(activeTransaction)}
+            onClose={closeActive}
+            onSuccess={fetchTransactions}
+            initialData={activeTransaction}
+            readOnly={activeMode === "view"}
+          />
+        )}
+
+        {activeTransaction?.type === "expense" && (
+          <ExpenseModal
+            isOpen={Boolean(activeTransaction)}
+            onClose={closeActive}
+            onSuccess={fetchTransactions}
+            initialData={activeTransaction}
+            readOnly={activeMode === "view"}
+          />
+        )}
 
       </main>
     </div>

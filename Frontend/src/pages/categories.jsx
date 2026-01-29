@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiEdit2, FiX, FiPlus, FiUser, FiTag, FiBell, FiLock, FiSettings } from "react-icons/fi";
 import Sidebar from "../components/Sidebar";
@@ -116,29 +116,24 @@ function Categories() {
   const removeCategory = (id) => {
     setCurrent((prev) => prev.filter((c) => c.id !== id));
   };
-useEffect(() => {
-  const savedExpense = localStorage.getItem("expenseCategories");
-  const savedIncome = localStorage.getItem("incomeCategories");
+  useEffect(() => {
+    const savedExpense = localStorage.getItem("expenseCategories");
+    const savedIncome = localStorage.getItem("incomeCategories");
 
-  if (savedExpense) setExpenseCategories(JSON.parse(savedExpense));
-  if (savedIncome) setIncomeCategories(JSON.parse(savedIncome));
-}, []);
-useEffect(() => {
-  localStorage.setItem(
-    "expenseCategories",
-    JSON.stringify(expenseCategories)
-  );
-}, [expenseCategories]);
+    if (savedExpense) setExpenseCategories(JSON.parse(savedExpense));
+    if (savedIncome) setIncomeCategories(JSON.parse(savedIncome));
+  }, []);
 
-useEffect(() => {
-  localStorage.setItem(
-    "incomeCategories",
-    JSON.stringify(incomeCategories)
-  );
-}, [incomeCategories]);
+  useEffect(() => {
+    localStorage.setItem("expenseCategories", JSON.stringify(expenseCategories));
+  }, [expenseCategories]);
+
+  useEffect(() => {
+    localStorage.setItem("incomeCategories", JSON.stringify(incomeCategories));
+  }, [incomeCategories]);
 
   return (
-    <div className="dashboard">
+    <div className="dashboard settings-shell">
         <Sidebar />
 
       <main className="content settings-content">

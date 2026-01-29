@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "../styles/expenseModal.css";
 
-function IncomeModal({ isOpen, onClose, onSuccess }) {
+function IncomeModal({ isOpen, onClose, onSuccess, initialData = null, readOnly = false }) {
   const today = new Date().toISOString().split("T")[0];
 
   const [formData, setFormData] = useState({
@@ -16,16 +16,30 @@ function IncomeModal({ isOpen, onClose, onSuccess }) {
 
   useEffect(() => {
     if (isOpen) {
-      setFormData({
-        description: "",
-        amount: "",
-        category: "",
-        date: today,
-        notes: "",
-      });
+      if (initialData) {
+        const initialDate = initialData.date
+          ? new Date(initialData.date).toISOString().split("T")[0]
+          : today;
+
+        setFormData({
+          description: initialData.description || "",
+          amount: initialData.amount ?? "",
+          category: initialData.category || "",
+          date: initialDate,
+          notes: initialData.notes || "",
+        });
+      } else {
+        setFormData({
+          description: "",
+          amount: "",
+          category: "",
+          date: today,
+          notes: "",
+        });
+      }
       setError("");
     }
-  }, [isOpen]);
+  }, [isOpen, initialData, today]);
 
   if (!isOpen) return null;
 
@@ -38,6 +52,11 @@ function IncomeModal({ isOpen, onClose, onSuccess }) {
     e.preventDefault();
     setError("");
 
+    if (readOnly) {
+      onClose();
+      return;
+    }
+
     if (!formData.description || !formData.amount || !formData.category) {
       setError("Please fill Description, Amount and Category");
       return;
@@ -46,26 +65,28 @@ function IncomeModal({ isOpen, onClose, onSuccess }) {
     try {
       const token = localStorage.getItem("token");
 
-      const res = await fetch(
-        "http://localhost:4000/api/transactions/income",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            description: formData.description,
-            amount: Number(formData.amount),
-            category: formData.category,
-            date: formData.date,
-            notes: formData.notes,   // ✅ FIXED
-          }),
-        }
-      );
+      const isEditing = Boolean(initialData?._id);
+      const url = isEditing
+        ? `http://localhost:4000/api/transactions/${initialData._id}`
+        : "http://localhost:4000/api/transactions/income";
+
+      const res = await fetch(url, {
+        method: isEditing ? "PUT" : "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          description: formData.description,
+          amount: Number(formData.amount),
+          category: formData.category,
+          date: formData.date,
+          notes: formData.notes,
+        }),
+      });
 
       if (!res.ok) {
-        setError("Failed to save income");
+        setError(isEditing ? "Failed to update income" : "Failed to save income");
         return;
       }
 
@@ -81,8 +102,20 @@ function IncomeModal({ isOpen, onClose, onSuccess }) {
       <div className="modalBox" onClick={(e) => e.stopPropagation()}>
         <div className="modalHeader">
           <div>
-            <h2>Record New Income</h2>
-            <p>Add details about your income to track your finances better.</p>
+            <h2>
+              {readOnly
+                ? "Income Details"
+                : initialData
+                  ? "Edit Income"
+                  : "Record New Income"}
+            </h2>
+            <p>
+              {readOnly
+                ? "Review your income transaction details."
+                : initialData
+                  ? "Update details about your income transaction."
+                  : "Add details about your income to track your finances better."}
+            </p>
           </div>
 
           <button className="closeBtn" onClick={onClose}>
@@ -91,7 +124,9 @@ function IncomeModal({ isOpen, onClose, onSuccess }) {
         </div>
 
         <form className="modalForm" onSubmit={handleSubmit}>
-          <h3>Add Income</h3>
+          <h3>
+            {readOnly ? "Income" : initialData ? "Edit Income" : "Add Income"}
+          </h3>
 
           <div className="twoCol">
             <div className="field">
@@ -101,6 +136,7 @@ function IncomeModal({ isOpen, onClose, onSuccess }) {
                 placeholder="e.g. Freelance Payment"
                 value={formData.description}
                 onChange={handleChange}
+                disabled={readOnly}
               />
             </div>
 
@@ -112,6 +148,7 @@ function IncomeModal({ isOpen, onClose, onSuccess }) {
                 placeholder="₹ 0"
                 value={formData.amount}
                 onChange={handleChange}
+                disabled={readOnly}
               />
             </div>
           </div>
@@ -123,6 +160,7 @@ function IncomeModal({ isOpen, onClose, onSuccess }) {
                 name="category"
                 value={formData.category}
                 onChange={handleChange}
+                disabled={readOnly}
               >
                 <option value="">Select a category</option>
                 <option value="Salary">Salary</option>
@@ -140,6 +178,7 @@ function IncomeModal({ isOpen, onClose, onSuccess }) {
                 type="date"
                 value={formData.date}
                 onChange={handleChange}
+                disabled={readOnly}
               />
             </div>
           </div>
@@ -151,6 +190,7 @@ function IncomeModal({ isOpen, onClose, onSuccess }) {
               placeholder="Add any additional details..."
               value={formData.notes}
               onChange={handleChange}
+              disabled={readOnly}
             />
           </div>
 
@@ -158,11 +198,13 @@ function IncomeModal({ isOpen, onClose, onSuccess }) {
 
           <div className="modalActions">
             <button type="button" className="cancelBtn" onClick={onClose}>
-              Cancel
+              {readOnly ? "Close" : "Cancel"}
             </button>
-            <button type="submit" className="saveBtn">
-              Save
-            </button>
+            {!readOnly && (
+              <button type="submit" className="saveBtn">
+                {initialData ? "Update" : "Save"}
+              </button>
+            )}
           </div>
         </form>
       </div>

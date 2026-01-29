@@ -11,6 +11,10 @@ import Income from "./pages/income";
 import Budgets from "./pages/budgets";
 import Categories from "./pages/categories";
 import Transactions from "./pages/transactions";
+import TaxEstimator from "./pages/taxestimator";
+
+
+
 function App() {
   return (
     <BrowserRouter>
@@ -27,7 +31,8 @@ function App() {
         <Route path="/expenses" element={<Expenses />} />
         <Route path="/budgets" element={<Budgets />} />
         <Route path="/settings/categories" element={<Categories />} />
-      
+        <Route path="/tax-estimator" element={<TaxEstimator />} />
+
       
         <Route path="/verify-otp" element={<VerifyOtp />} />
         <Route path="/reset-password" element={<ResetPassword />} />

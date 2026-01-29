@@ -9,6 +9,7 @@ function Income() {
   const [incomes, setIncomes] = useState([]);
  const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
+  const [activeIncome, setActiveIncome] = useState(null);
   
 
   // ✅ SAFE FILTER LOGIC
@@ -41,6 +42,33 @@ function Income() {
   useEffect(() => {
     fetchIncome();
   }, []);
+
+  const closeActive = () => setActiveIncome(null);
+
+  const handleDelete = async (item) => {
+    const ok = window.confirm("Delete this income transaction?");
+    if (!ok) return;
+
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(
+        `http://localhost:4000/api/transactions/${item._id}`,
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (!res.ok) {
+        console.error("Failed to delete income");
+        return;
+      }
+
+      fetchIncome();
+    } catch (err) {
+      console.error("Failed to delete income");
+    }
+  };
 
   const totalIncome = incomes.reduce((sum, i) => sum + i.amount, 0);
   const avgIncome = incomes.length
@@ -146,10 +174,20 @@ function Income() {
   </td>
 
   <td className="actions-col">
-    <button className="icon-btn edit">
+    <button
+      className="icon-btn edit"
+      type="button"
+      onClick={() => setActiveIncome(item)}
+      title="Edit"
+    >
       <FaEdit />
     </button>
-    <button className="icon-btn delete">
+    <button
+      className="icon-btn delete"
+      type="button"
+      onClick={() => handleDelete(item)}
+      title="Delete"
+    >
       <FaTrash />
     </button>
   </td>
@@ -167,6 +205,15 @@ function Income() {
             isOpen={openIncomeModal}
             onClose={() => setOpenIncomeModal(false)}
             onSuccess={fetchIncome}
+          />
+        )}
+
+        {activeIncome && (
+          <IncomeModal
+            isOpen={Boolean(activeIncome)}
+            onClose={closeActive}
+            onSuccess={fetchIncome}
+            initialData={activeIncome}
           />
         )}
       </main>

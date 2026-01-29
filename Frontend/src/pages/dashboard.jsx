@@ -1,4 +1,4 @@
-import "../styles/dashboard.css";
+dashboard.jsx import "../styles/dashboard.css";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import ExpenseModal from "../components/ExpenseModal";
@@ -105,31 +105,33 @@ useEffect(() => {
           <h2 className="logo">TaxPal</h2>
           <p className="tagline">Financial Manager</p>
 
-    <nav className="menu">
-  <button onClick={() => navigate("/dashboard")}>
+  <nav className="menu">
+  <span onClick={() => navigate("/dashboard")}>
     <FaHome /> Dashboard
-  </button>
+  </span>
 
-  <button onClick={() => navigate("/income")}>
-    <FaMoneyBillWave /> Income
-  </button>
+  <span onClick={() => navigate("/transactions")}>
+    <FaReceipt /> Transactions
+  </span>
 
-  <button onClick={() => navigate("/expenses")}>
-    <FaReceipt /> Expenses
-  </button>
-
-  <button onClick={() => navigate("/budgets")}>
+  <span onClick={() => navigate("/budgets")}>
     <FaReceipt /> Budgets
-  </button>
+  </span>
 
-  <button onClick={() => navigate("/reports")}>
+    
+  <span onClick={() => navigate("/taxestimator")}>
+    <FaMoneyBillWave /> Tax Estimator
+  </span>
+
+  <span onClick={() => navigate("/reports")}>
     <FaReceipt /> Reports
-  </button>
+  </span>
 
-  <button onClick={() => navigate("/settings")}>
-    <FaReceipt /> Settings
-  </button>
+  <span onClick={() => navigate("/settings")}>
+    <FaCog /> Settings
+  </span>
 </nav>
+
 
         </div>
 

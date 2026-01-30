@@ -11,24 +11,14 @@ function Transactions() {
   const [openExpenseModal, setOpenExpenseModal] = useState(false);
   const [search, setSearch] = useState("");
   const [activeTransaction, setActiveTransaction] = useState(null);
-  const [activeMode, setActiveMode] = useState("edit");
-const totalIncome = transactions
-  .filter(t => t.type === "income")
-  .reduce((sum, t) => sum + t.amount, 0);
 
-const totalExpense = transactions
-  .filter(t => t.type === "expense")
-  .reduce((sum, t) => sum + t.amount, 0);
-
+  /* ================= FETCH ================= */
   const fetchTransactions = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(
-        "http://localhost:4000/api/transactions",
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const res = await fetch("http://localhost:4000/api/transactions", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       const data = await res.json();
       if (res.ok) setTransactions(data);
     } catch (err) {
@@ -36,16 +26,29 @@ const totalExpense = transactions
     }
   };
 
+  useEffect(() => {
+    fetchTransactions();
+  }, []);
+
+  /* ================= TOTALS ================= */
+  const totalIncome = transactions
+    .filter((t) => t.type === "income")
+    .reduce((sum, t) => sum + t.amount, 0);
+
+  const totalExpense = transactions
+    .filter((t) => t.type === "expense")
+    .reduce((sum, t) => sum + t.amount, 0);
+
+  /* ================= EDIT ================= */
   const openEdit = (t) => {
     setActiveTransaction(t);
-    setActiveMode("edit");
   };
 
   const closeActive = () => {
     setActiveTransaction(null);
-    setActiveMode("edit");
   };
 
+  /* ================= DELETE ================= */
   const handleDelete = async (t) => {
     const ok = window.confirm("Delete this transaction?");
     if (!ok) return;
@@ -60,24 +63,17 @@ const totalExpense = transactions
         }
       );
 
-      if (!res.ok) {
-        console.error("Failed to delete transaction");
-        return;
-      }
-
-      fetchTransactions();
+      if (res.ok) fetchTransactions();
     } catch (err) {
-      console.error("Failed to delete transaction");
+      console.error("Delete failed");
     }
   };
 
-  useEffect(() => {
-    fetchTransactions();
-  }, []);
-
-  const filtered = transactions.filter((t) =>
-    t.description?.toLowerCase().includes(search.toLowerCase()) ||
-    t.category?.toLowerCase().includes(search.toLowerCase())
+  /* ================= FILTER ================= */
+  const filtered = transactions.filter(
+    (t) =>
+      t.description?.toLowerCase().includes(search.toLowerCase()) ||
+      t.category?.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -110,18 +106,19 @@ const totalExpense = transactions
             </button>
           </div>
         </div>
-{/* QUICK SUMMARY */}
-<div className="transaction-summary-bar">
-  <div className="summary-item income">
-    <span>Total Income</span>
-    <b>₹{totalIncome.toLocaleString()}</b>
-  </div>
 
-  <div className="summary-item expense">
-    <span>Total Expense</span>
-    <b>₹{totalExpense.toLocaleString()}</b>
-  </div>
-</div>
+        {/* SUMMARY */}
+        <div className="transaction-summary-bar">
+          <div className="summary-item income">
+            <span>Total Income</span>
+            <b>₹{totalIncome.toLocaleString()}</b>
+          </div>
+
+          <div className="summary-item expense">
+            <span>Total Expense</span>
+            <b>₹{totalExpense.toLocaleString()}</b>
+          </div>
+        </div>
 
         {/* SEARCH */}
         <div className="income-filters">
@@ -174,17 +171,13 @@ const totalExpense = transactions
                     <td className="actions-col">
                       <button
                         className="icon-btn edit"
-                        type="button"
                         onClick={() => openEdit(t)}
-                        title="Edit"
                       >
                         <FaEdit />
                       </button>
                       <button
                         className="icon-btn delete"
-                        type="button"
                         onClick={() => handleDelete(t)}
-                        title="Delete"
                       >
                         <FaTrash />
                       </button>
@@ -196,43 +189,41 @@ const totalExpense = transactions
           </table>
         </div>
 
-        {/* MODALS */}
+        {/* CREATE MODALS */}
         {openIncomeModal && (
           <IncomeModal
-           isOpen={openIncomeModal}
+            isOpen
             onClose={() => setOpenIncomeModal(false)}
             onSuccess={fetchTransactions}
           />
         )}
 
-       {openExpenseModal && (
-  <ExpenseModal
-    isOpen={openExpenseModal}
-    onClose={() => setOpenExpenseModal(false)}
-    onSuccess={fetchTransactions}
-  />
-)}
+        {openExpenseModal && (
+          <ExpenseModal
+            isOpen
+            onClose={() => setOpenExpenseModal(false)}
+            onSuccess={fetchTransactions}
+          />
+        )}
 
+        {/* EDIT MODALS */}
         {activeTransaction?.type === "income" && (
           <IncomeModal
-            isOpen={Boolean(activeTransaction)}
+            isOpen
+            initialData={activeTransaction}
             onClose={closeActive}
             onSuccess={fetchTransactions}
-            initialData={activeTransaction}
-            readOnly={activeMode === "view"}
           />
         )}
 
         {activeTransaction?.type === "expense" && (
           <ExpenseModal
-            isOpen={Boolean(activeTransaction)}
+            isOpen
+            initialData={activeTransaction}
             onClose={closeActive}
             onSuccess={fetchTransactions}
-            initialData={activeTransaction}
-            readOnly={activeMode === "view"}
           />
         )}
-
       </main>
     </div>
   );

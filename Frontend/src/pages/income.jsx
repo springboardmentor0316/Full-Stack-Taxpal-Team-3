@@ -12,7 +12,7 @@ function Income() {
   const [activeIncome, setActiveIncome] = useState(null);
   
 
-  // ✅ SAFE FILTER LOGIC
+  //  SAFE FILTER LOGIC
   const filteredIncomes = incomes.filter((item) => {
     const description = item.description || "";
     const category = item.category || "";

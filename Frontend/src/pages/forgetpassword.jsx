@@ -45,7 +45,7 @@ try {
     return;
   }
 
-  // ✅ success
+  //  success
   setSuccess(data.message || "OTP sent to your email");
 
   setTimeout(() => {

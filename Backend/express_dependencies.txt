@@ -7,4 +7,4 @@ npm install jsonwebtoken
 npm install bcrypt
 
 // or do -
-npm i express mongoose cors jsiwebtoken bcrypt
+npm i express mongoose cors jsonwebtoken bcrypt

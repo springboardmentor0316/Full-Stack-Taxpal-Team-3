@@ -90,7 +90,7 @@ function ExpenseModal({ isOpen, onClose, onSuccess, initialData = null, readOnly
         return;
       }
 
-      onSuccess(); // 🔥 reload expense list
+      onSuccess(); //  reload expense list
       onClose();
     } catch (err) {
       setError("Server error");

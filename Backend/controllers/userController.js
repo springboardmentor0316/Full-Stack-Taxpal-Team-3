@@ -115,6 +115,8 @@ exports.login = async (req, res) => {
       message: "Login successful",
       token,
       userId: user._id,
+      name: user.name,
+      email: user.email,
       isEmailVerified: user.isEmailVerified
     })
 
@@ -180,40 +182,32 @@ exports.resendLoginOtp = async (req, res) => {
 // forgot password function
 exports.forgotPassword = async (req, res) => {
   try {
-    const { email } = req.body
-    if (!email) {
-      return res.status(400).json({ message: "Email is required" })
-    }
+    const { email } = req.body;
 
-    const user = await User.findOne({ email })
+    const user = await User.findOne({ email });
     if (!user) {
-      return res.status(404).json({ message: "User not found" })
+      return res.status(404).json({ message: "User not found" });
     }
 
-    const otp = generateSixDigitOtp()
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-    user.resetOtpHash = hashOtp(otp)
-    user.resetOtpExpire = Date.now() + 10 * 60 * 1000 // 10 min
-    await user.save()
+    user.otp = otp;
+    user.otpExpire = Date.now() + 10 * 60 * 1000;
+    await user.save();
 
-    await sendOtpEmail({
-      to: email,
-      otp,
-      purpose: "Password Reset"
-    })
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: user.email,
+      subject: "Password Reset OTP",
+      text: `Your OTP is ${otp}. It is valid for 10 minutes.`,
+    });
 
-    res.status(200).json({
-      message: "OTP sent to your email"
-    })
-    console.log("Generated OTP:", otp);
-
+    res.status(200).json({ message: "OTP sent to your email" });
   } catch (error) {
-    res.status(500).json({
-      message: "Failed to send OTP",
-      error: error.message
-    })
+    res.status(500).json({ message: "Email not sent" });
   }
-}
+};
+
 
 
 //verify otp 

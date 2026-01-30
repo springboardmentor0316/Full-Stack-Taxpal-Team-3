@@ -10,6 +10,8 @@ const userSchema = new mongoose.Schema({
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
+    otp:{type:String},
+    otpExpire:{type:Date,},
     country: { type: String, default: "India" },
     income_bracket: {  //optional field
       type: String,
@@ -27,7 +29,7 @@ const userSchema = new mongoose.Schema({
       type: Number
     },
 
-    // 🔥 FORGOT PASSWORD – OTP BASED (ADD THESE)
+    //  FORGOT PASSWORD – OTP BASED (ADD THESE)
     resetOtpHash: {
       type: String
     },
@@ -40,6 +42,10 @@ const userSchema = new mongoose.Schema({
     }
     
   }, { timestamps: true }
+
+
+
+
 )
 
 module.exports = mongoose.model("User", userSchema)

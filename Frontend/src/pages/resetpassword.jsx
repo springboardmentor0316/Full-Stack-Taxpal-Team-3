@@ -5,7 +5,7 @@ import "../styles/resetpassword.css";
 
 function ResetPassword() {
   const navigate = useNavigate();
-  const { state } = useLocation(); // ✅ email passed from VerifyOtp
+  const { state } = useLocation(); //  email passed from VerifyOtp
   const email = state?.email;
 
   const [showPassword, setShowPassword] = useState(false);

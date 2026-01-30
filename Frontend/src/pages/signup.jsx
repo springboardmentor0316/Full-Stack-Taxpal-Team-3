@@ -9,7 +9,7 @@ function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // ✅ EXACT schema fields
+  //  EXACT schema fields
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [country, setCountry] = useState("");
@@ -28,7 +28,7 @@ function Signup() {
     setError("");
     setSuccess("");
 
-    // ✅ validations
+    // validations
     if (!name || !email || !password || !confirmPassword || !country) {
       setError("All required fields must be filled");
       return;
@@ -49,13 +49,14 @@ function Signup() {
       return;
     }
 
-    // ✅ payload exactly matching backend schema
+    //  payload exactly matching backend schema
     const signupData = {
       name,
       email,
       password,
       country,
-      income_bracket: incomeBracket || undefined, // optional
+      income_bracket: incomeBracket || undefined, 
+      // optional
     };
 
     try {
@@ -76,7 +77,7 @@ function Signup() {
 
       setSuccess(data.message || "Account created successfully!");
 
-      // ✅ redirect to login after success
+      // redirect to login after success
       setTimeout(() => {
         navigate("/");
       }, 800);
@@ -104,28 +105,27 @@ function Signup() {
         <h2>Create Account</h2>
 
         <form className="form" onSubmit={handleSubmit}>
-          {/* ✅ FULL NAME */}
+          {/* FULL NAME */}
           <input
             placeholder="Full Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
 
-          {/* ✅ EMAIL */}
+          {/*  EMAIL */}
           <input
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
-
-          {/* ✅ COUNTRY */}
+          {/*  COUNTRY */}
           <input
             placeholder="Country"
             value={country}
             onChange={(e) => setCountry(e.target.value)}
           />
 
-          {/* ✅ INCOME BRACKET (optional) */}
+          {/*  INCOME BRACKET (optional) */}
           <select
             className="input-field"
             value={incomeBracket}
@@ -137,7 +137,7 @@ function Signup() {
             <option value="High">High</option>
           </select>
 
-          {/* ✅ PASSWORD */}
+          {/*  PASSWORD */}
           <div className="password-box">
             <input
               type={showPassword ? "text" : "password"}
@@ -154,7 +154,7 @@ function Signup() {
             </span>
           </div>
 
-          {/* ✅ CONFIRM PASSWORD */}
+          {/*  CONFIRM PASSWORD */}
           <div className="password-box">
             <input
               type={showConfirmPassword ? "text" : "password"}

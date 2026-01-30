@@ -60,9 +60,12 @@ function Login() {
 
       setSuccess("Login successful!");
 
-      // ✅ store token if backend sends it
+      //  store token if backend sends it
       if (data.token) {
         localStorage.setItem("token", data.token);
+        if (data.userId) localStorage.setItem("userId", data.userId);
+        if (data.name) localStorage.setItem("name", data.name);
+        if (data.email) localStorage.setItem("email", data.email);
       }
 
       setTimeout(() => {

@@ -13,6 +13,9 @@ import "../styles/dashboard.css";
 function Sidebar() {
   const navigate = useNavigate();
 
+  const name = localStorage.getItem("name") || "";
+  const email = localStorage.getItem("email") || "";
+
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("userId");
@@ -61,8 +64,8 @@ function Sidebar() {
           <div className="profile">
             <FaUserCircle />
             <div>
-              <p className="name">Manasvi</p>
-              <p className="email">manasvi@gmail.com</p>
+              <p className="name">{name}</p>
+              <p className="email">{email}</p>
             </div>
           </div>
 

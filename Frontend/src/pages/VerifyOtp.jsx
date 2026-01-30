@@ -58,7 +58,7 @@ function VerifyOtp() {
         return;
       }
 
-      // ✅ OTP verified
+      //  OTP verified
       navigate("/reset-password", { state: { email: state.email } });
     } catch (err) {
       setError("Server error. Please try again.");

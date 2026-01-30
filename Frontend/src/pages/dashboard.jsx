@@ -2,7 +2,7 @@ import "../styles/dashboard.css";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import ExpenseModal from "../components/ExpenseModal";
-import IncomeModal from "../components/IncomeModal"; // ✅ ADD THIS
+import IncomeModal from "../components/IncomeModal"; // ADD THIS
 import { NavLink } from "react-router-dom";
 import SpendingChart from "../components/SpendingChart";
 
@@ -35,6 +35,13 @@ import {
 
 function Dashboard() {
   const navigate = useNavigate();
+
+  const [userName, setUserName] = useState(
+    localStorage.getItem("name") || ""
+  );
+  const [userEmail, setUserEmail] = useState(
+    localStorage.getItem("email") || ""
+  );
 
   const handleLogout = () => navigate("/");
 
@@ -139,8 +146,8 @@ useEffect(() => {
           <div className="profile">
             <FaUserCircle />
             <div>
-              <p className="name">Manasvi</p>
-              <p className="email">manasvi@gmail.com</p>
+              <p className="user-info">{userName}</p>
+              <p className="user-email">{userEmail}</p>
             </div>
           </div>
 
@@ -184,7 +191,7 @@ useEffect(() => {
 </div>
 
         {/* WELCOME */}
-        <h1 className="welcome">Welcome back 👋</h1>
+        <h1 className="welcome">Welcome back </h1>
         <p className="subtitle">Here’s an overview of your financial activity</p>
 
         {/* CARDS */}
@@ -287,14 +294,14 @@ useEffect(() => {
 </div>
       </main>
 
-        {/* ✅ EXPENSE MODAL */}
+        {/*  EXPENSE MODAL */}
       <ExpenseModal
         isOpen={openExpenseModal}
         onClose={() => setOpenExpenseModal(false)}
         onSave={(data) => console.log("Expense Saved:", data)}
       />
 
-      {/* ✅ INCOME MODAL */}
+      {/* INCOME MODAL */}
       <IncomeModal
         isOpen={openIncomeModal}
         onClose={() => setOpenIncomeModal(false)}

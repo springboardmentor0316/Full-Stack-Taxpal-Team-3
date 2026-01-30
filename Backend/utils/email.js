@@ -19,7 +19,17 @@ const createTransport = () => {
 }
 
 const sendOtpEmail = async ({ to, otp, purpose }) => {
-  const transporter = createTransport()
+  const transporter = nodemailer.createTransport({
+    
+
+
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+  });
+  
   const from = process.env.EMAIL_FROM || process.env.SMTP_USER
 
   const subject = purpose ? `TaxPal OTP - ${purpose}` : "TaxPal OTP"

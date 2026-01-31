@@ -1,17 +1,5 @@
 import { useEffect, useState } from "react";
 import "../styles/expenseModal.css";
-const CATEGORY_OPTIONS = [
-  "Housing",
-  "Groceries",
-  "Transport",
-  "Utilities",
-  "Dining",
-  "Shopping",
-  "Healthcare",
-  "Entertainment",
-  "Savings",
-  "Other",
-];
 
 function ExpenseModal({
   isOpen,
@@ -33,54 +21,51 @@ function ExpenseModal({
   const [error, setError] = useState("");
   const [categories, setCategories] = useState([]);
 
-  /* ================= FETCH BUDGET CATEGORIES ================= */
-  const fetchBudgetCategories = async () => {
+  /* ================= FETCH EXPENSE CATEGORIES ================= */
+  const fetchExpenseCategories = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:4000/api/budgets", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch(
+        "http://localhost:4000/api/categories?type=expense",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       const data = await res.json();
-
-      if (res.ok) {
-        const uniqueCategories = [
-          ...new Set(data.map((b) => b.category)),
-        ];
-        setCategories(uniqueCategories);
-      }
+      if (res.ok) setCategories(data);
     } catch (err) {
-      console.error("Failed to fetch budget categories");
+      console.error("Failed to fetch expense categories");
     }
   };
 
   useEffect(() => {
-    if (isOpen) {
-      fetchBudgetCategories();
+    if (!isOpen) return;
 
-      if (initialData) {
-        const initialDate = initialData.date
-          ? new Date(initialData.date).toISOString().split("T")[0]
-          : today;
+    fetchExpenseCategories();
 
-        setFormData({
-          description: initialData.description || "",
-          amount: initialData.amount ?? "",
-          category: initialData.category || "",
-          date: initialDate,
-          notes: initialData.notes || "",
-        });
-      } else {
-        setFormData({
-          description: "",
-          amount: "",
-          category: "",
-          date: today,
-          notes: "",
-        });
-      }
+    if (initialData) {
+      const initialDate = initialData.date
+        ? new Date(initialData.date).toISOString().split("T")[0]
+        : today;
 
-      setError("");
+      setFormData({
+        description: initialData.description || "",
+        amount: initialData.amount ?? "",
+        category: initialData.category || "",
+        date: initialDate,
+        notes: initialData.notes || "",
+      });
+    } else {
+      setFormData({
+        description: "",
+        amount: "",
+        category: "",
+        date: today,
+        notes: "",
+      });
     }
+
+    setError("");
   }, [isOpen, initialData, today]);
 
   if (!isOpen) return null;
@@ -129,12 +114,14 @@ function ExpenseModal({
 
       if (!res.ok) {
         setError(
-          isEditing ? "Failed to update expense" : "Failed to save expense"
+          isEditing
+            ? "Failed to update expense"
+            : "Failed to save expense"
         );
         return;
       }
 
-
+      onSuccess();
       onClose();
     } catch (err) {
       setError("Server error");
@@ -161,9 +148,7 @@ function ExpenseModal({
                 : "Add details about your expense to track your spending better."}
             </p>
           </div>
-          <button className="closeBtn" onClick={onClose}>
-            ✕
-          </button>
+          <button className="closeBtn" onClick={onClose}>✕</button>
         </div>
 
         <form className="modalForm" onSubmit={handleSubmit}>
@@ -195,23 +180,22 @@ function ExpenseModal({
           </div>
 
           <div className="twoCol">
-<div className="field">
-  <label>Category</label>
-  <select
-    name="category"
-    value={formData.category}
-    onChange={handleChange}
-    disabled={readOnly}
-  >
-    <option value="">Select category</option>
-    {CATEGORY_OPTIONS.map((cat) => (
-      <option key={cat} value={cat}>
-        {cat}
-      </option>
-    ))}
-  </select>
-</div>
-
+            <div className="field">
+              <label>Category</label>
+              <select
+                name="category"
+                value={formData.category}
+                onChange={handleChange}
+                disabled={readOnly}
+              >
+                <option value="">Select category</option>
+                {categories.map((cat) => (
+                  <option key={cat._id} value={cat.name}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+            </div>
 
             <div className="field">
               <label>Date</label>

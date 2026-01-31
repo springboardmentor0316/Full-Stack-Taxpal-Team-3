@@ -31,7 +31,7 @@ app.get("/", (req, res) => {
 app.use('/api/users', userRoutes)
 app.use("/api/transactions", require("./routes/transactionRoutes"));
 app.use("/api/budgets", require("./routes/budgetRoutes"));
-
+app.use("/api/categories", require("./routes/categoryRoutes"));
 
 app.use((err, req, res, next) => {
     console.error(err.stack)

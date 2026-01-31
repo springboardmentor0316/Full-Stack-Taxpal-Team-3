@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "../styles/expenseModal.css";
 
-function ExpenseModal({
+function IncomeModal({
   isOpen,
   onClose,
   onSuccess,
@@ -21,12 +21,12 @@ function ExpenseModal({
   const [error, setError] = useState("");
   const [categories, setCategories] = useState([]);
 
-  /* ================= FETCH EXPENSE CATEGORIES ================= */
-  const fetchExpenseCategories = async () => {
+  /* ================= FETCH INCOME CATEGORIES ================= */
+  const fetchIncomeCategories = async () => {
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(
-        "http://localhost:4000/api/categories?type=expense",
+        "http://localhost:4000/api/categories?type=income",
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -34,14 +34,14 @@ function ExpenseModal({
       const data = await res.json();
       if (res.ok) setCategories(data);
     } catch (err) {
-      console.error("Failed to fetch expense categories");
+      console.error("Failed to fetch income categories");
     }
   };
 
   useEffect(() => {
     if (!isOpen) return;
 
-    fetchExpenseCategories();
+    fetchIncomeCategories();
 
     if (initialData) {
       const initialDate = initialData.date
@@ -95,7 +95,7 @@ function ExpenseModal({
       const isEditing = Boolean(initialData?._id);
       const url = isEditing
         ? `http://localhost:4000/api/transactions/${initialData._id}`
-        : "http://localhost:4000/api/transactions/expense";
+        : "http://localhost:4000/api/transactions/income";
 
       const res = await fetch(url, {
         method: isEditing ? "PUT" : "POST",
@@ -114,9 +114,7 @@ function ExpenseModal({
 
       if (!res.ok) {
         setError(
-          isEditing
-            ? "Failed to update expense"
-            : "Failed to save expense"
+          isEditing ? "Failed to update income" : "Failed to save income"
         );
         return;
       }
@@ -135,17 +133,17 @@ function ExpenseModal({
           <div>
             <h2>
               {readOnly
-                ? "Expense Details"
+                ? "Income Details"
                 : initialData
-                ? "Edit Expense"
-                : "Record New Expense"}
+                ? "Edit Income"
+                : "Record New Income"}
             </h2>
             <p>
               {readOnly
-                ? "Review your expense transaction details."
+                ? "Review your income transaction details."
                 : initialData
-                ? "Update details about your expense transaction."
-                : "Add details about your expense to track your spending better."}
+                ? "Update details about your income transaction."
+                : "Add details about your income to track your finances better."}
             </p>
           </div>
           <button className="closeBtn" onClick={onClose}>✕</button>
@@ -153,7 +151,7 @@ function ExpenseModal({
 
         <form className="modalForm" onSubmit={handleSubmit}>
           <h3>
-            {readOnly ? "Expense" : initialData ? "Edit Expense" : "Add Expense"}
+            {readOnly ? "Income" : initialData ? "Edit Income" : "Add Income"}
           </h3>
 
           <div className="twoCol">
@@ -161,6 +159,7 @@ function ExpenseModal({
               <label>Description</label>
               <input
                 name="description"
+                placeholder="e.g. Freelance Payment"
                 value={formData.description}
                 onChange={handleChange}
                 disabled={readOnly}
@@ -172,6 +171,7 @@ function ExpenseModal({
               <input
                 name="amount"
                 type="number"
+                placeholder="₹ 0"
                 value={formData.amount}
                 onChange={handleChange}
                 disabled={readOnly}
@@ -210,9 +210,10 @@ function ExpenseModal({
           </div>
 
           <div className="field">
-            <label>Notes</label>
+            <label>Notes (Optional)</label>
             <textarea
               name="notes"
+              placeholder="Add any additional details..."
               value={formData.notes}
               onChange={handleChange}
               disabled={readOnly}
@@ -237,4 +238,4 @@ function ExpenseModal({
   );
 }
 
-export default ExpenseModal;
+export default IncomeModal;

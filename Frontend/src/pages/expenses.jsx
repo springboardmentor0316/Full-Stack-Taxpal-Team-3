@@ -186,7 +186,7 @@ function Expenses() {
                         <FaEdit />
                       </button>
                       <button
-                        className="icon-btn delete"
+                        className="icon-btn delete" 
                         type="button"
                         onClick={() => handleDelete(item)}
                         title="Delete"

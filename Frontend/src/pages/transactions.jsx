@@ -205,7 +205,7 @@ function Transactions() {
             onSuccess={fetchTransactions}
           />
         )}
-
+ 
         {/* EDIT MODALS */}
         {activeTransaction?.type === "income" && (
           <IncomeModal

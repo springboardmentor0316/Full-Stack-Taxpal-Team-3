@@ -179,34 +179,51 @@ exports.resendLoginOtp = async (req, res) => {
 
 
 
-// forgot password function
 exports.forgotPassword = async (req, res) => {
   try {
-    const { email } = req.body;
+    const { email } = req.body
 
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" })
     }
 
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const user = await User.findOne({ email })
+    if (!user) {
+      return res.status(404).json({ message: "User not found" })
+    }
 
-    user.otp = otp;
-    user.otpExpire = Date.now() + 10 * 60 * 1000;
-    await user.save();
+    const otp = generateSixDigitOtp()
 
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
+    user.resetOtpHash = hashOtp(otp)
+    user.resetOtpExpire = Date.now() + (config.otpExpireMinutes || 10) * 60 * 1000
+    user.resetOtpVerified = false
+
+    await user.save()
+
+    await sendOtpEmail({
       to: user.email,
-      subject: "Password Reset OTP",
-      text: `Your OTP is ${otp}. It is valid for 10 minutes.`,
-    });
+      otp,
+      purpose: "Password reset",
+    })
 
-    res.status(200).json({ message: "OTP sent to your email" });
+    const payload = { message: "OTP sent to your email" }
+
+    // optional dev-only
+    if (config.exposeOtpInResponse) {
+      payload.otp = otp
+    }
+
+    return res.status(200).json(payload)
+
   } catch (error) {
-    res.status(500).json({ message: "Email not sent" });
+    console.error("FORGOT PASSWORD ERROR:", error)
+    return res.status(500).json({
+      message: "Failed to send reset OTP",
+      error: error.message,
+    })
   }
-};
+}
+
 
 
 
@@ -240,7 +257,7 @@ exports.verifyEmailOtp = async (req, res) => {
       return res.status(400).json({ message: "Invalid OTP" })
     }
 
-    // ✅ verify email
+   
     user.isEmailVerified = true
     user.loginOtpHash = undefined
     user.loginOtpExpire = undefined
@@ -270,7 +287,7 @@ exports.resetPassword = async (req, res) => {
       return res.status(404).json({ message: "User not found" })
     }
 
-    // ✅ STRICT check (prevents undefined issues)
+    
     if (user.resetOtpVerified !== true) {
       return res.status(400).json({
         message: "OTP verification required",
@@ -322,7 +339,7 @@ exports.verifyResetOtp = async (req, res) => {
       return res.status(400).json({ message: "Invalid OTP" })
     }
 
-    // ✅ mark OTP verified (optional flag)
+    
     user.resetOtpVerified = true
     await user.save()
 

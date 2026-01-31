@@ -1,284 +1,261 @@
-import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { FiEdit2, FiX, FiPlus, FiUser, FiTag, FiBell, FiLock, FiSettings } from "react-icons/fi";
+import { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
+import {
+  FiPlus,
+  FiX,
+  FiTag,
+  FiUser,
+  FiBell,
+  FiLock,
+} from "react-icons/fi";
 import "../styles/categories.css";
 
-function makeId() {
-  return `c_${Date.now()}_${Math.random().toString(16).slice(2)}`;
-}
-
-const DEFAULT_EXPENSE_CATEGORIES = [
-  { id: "e1", name: "Business Expenses", color: "#e74c3c" },
-  { id: "e2", name: "Office Rent", color: "#2d7ff9" },
-  { id: "e3", name: "Software Subscriptions", color: "#7c4dff" },
-  { id: "e4", name: "Professional Development", color: "#2fb3a3" },
-  
-];
-
-const DEFAULT_INCOME_CATEGORIES = [
-  { id: "i1", name: "Salary", color: "#2fb3a3" },
-  { id: "i2", name: "Freelance", color: "#2d7ff9" },
-  { id: "i3", name: "Investments", color: "#7c4dff" },
-];
-
 function Categories() {
-  const navigate = useNavigate();
-
   const [activeTab, setActiveTab] = useState("expense");
-  const [expenseCategories, setExpenseCategories] = useState(
-    DEFAULT_EXPENSE_CATEGORIES
-  );
-  const [incomeCategories, setIncomeCategories] = useState(
-    DEFAULT_INCOME_CATEGORIES
-  );
-
+  const [categories, setCategories] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editing, setEditing] = useState(null);
   const [form, setForm] = useState({ name: "", color: "#2d7ff9" });
   const [formError, setFormError] = useState("");
 
-  const current = useMemo(() => {
-    return activeTab === "expense" ? expenseCategories : incomeCategories;
-  }, [activeTab, expenseCategories, incomeCategories]);
+  const token = localStorage.getItem("token");
 
-  const setCurrent = (updater) => {
-    if (activeTab === "expense") setExpenseCategories(updater);
-    else setIncomeCategories(updater);
+  /* ================= FETCH CATEGORIES ================= */
+  const fetchCategories = async () => {
+    try {
+      const res = await fetch(
+        `http://localhost:4000/api/categories?type=${activeTab}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      const data = await res.json();
+      if (res.ok) setCategories(data);
+    } catch (err) {
+      console.error("Failed to fetch categories");
+    }
   };
 
-  const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("userId");
-    navigate("/login");
-  };
+  useEffect(() => {
+    fetchCategories();
+  }, [activeTab]);
 
-  const userName = "Infosys admin";
-  const userEmail = "infosys.admin@example.com";
-  const userInitials = "IA";
-
-  const openCreate = () => {
-    setEditing(null);
-    setForm({ name: "", color: "#2d7ff9" });
-    setFormError("");
-    setIsModalOpen(true);
-  };
-
-  const openEdit = (cat) => {
-    setEditing(cat);
-    setForm({ name: cat.name || "", color: cat.color || "#2d7ff9" });
-    setFormError("");
-    setIsModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setEditing(null);
-    setFormError("");
-  };
-
-  const onChange = (key) => (e) => {
-    if (formError) setFormError("");
-    setForm((prev) => ({ ...prev, [key]: e.target.value }));
-  };
-
-  const onSubmit = (e) => {
+  /* ================= ADD CATEGORY ================= */
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const name = String(form.name || "").trim();
+    const name = form.name.trim();
+
     if (!name) {
       setFormError("Please enter a category name.");
       return;
     }
 
-    const normalized = name.toLowerCase();
-    const exists = current.some((c) => c.id !== editing?.id && c.name.toLowerCase() === normalized);
-    if (exists) {
-      setFormError("This category already exists.");
-      return;
-    }
+    try {
+      const res = await fetch("http://localhost:4000/api/categories", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name,
+          color: form.color,
+          type: activeTab,
+        }),
+      });
 
-    if (editing) {
-      setCurrent((prev) =>
-        prev.map((c) =>
-          c.id === editing.id ? { ...c, name, color: form.color } : c
-        )
-      );
-    } else {
-      setCurrent((prev) => [{ id: makeId(), name, color: form.color }, ...prev]);
-    }
+      if (!res.ok) {
+        const err = await res.json();
+        setFormError(err.message || "Failed to add category");
+        return;
+      }
 
-    setIsModalOpen(false);
+      setForm({ name: "", color: "#2d7ff9" });
+      setFormError("");
+      setIsModalOpen(false);
+      fetchCategories();
+    } catch (err) {
+      setFormError("Server error");
+    }
   };
 
-  const removeCategory = (id) => {
-    setCurrent((prev) => prev.filter((c) => c.id !== id));
+  /* ================= DELETE CATEGORY ================= */
+  const handleDelete = async (id) => {
+    if (!window.confirm("Delete this category?")) return;
+
+    try {
+      await fetch(`http://localhost:4000/api/categories/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      fetchCategories();
+    } catch (err) {
+      console.error("Failed to delete category");
+    }
   };
-  useEffect(() => {
-    const savedExpense = localStorage.getItem("expenseCategories");
-    const savedIncome = localStorage.getItem("incomeCategories");
-
-    if (savedExpense) setExpenseCategories(JSON.parse(savedExpense));
-    if (savedIncome) setIncomeCategories(JSON.parse(savedIncome));
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("expenseCategories", JSON.stringify(expenseCategories));
-  }, [expenseCategories]);
-
-  useEffect(() => {
-    localStorage.setItem("incomeCategories", JSON.stringify(incomeCategories));
-  }, [incomeCategories]);
 
   return (
     <div className="dashboard settings-shell">
-        <Sidebar />
+      <Sidebar />
 
       <main className="content settings-content">
+        {/* HEADER */}
         <div className="settings-header">
           <div>
             <h1 className="settings-title">Settings</h1>
-            <p className="subtitle">Manage your account settings and preferences</p>
+            <p className="subtitle">
+              Manage your account settings and preferences
+            </p>
           </div>
         </div>
 
         <div className="settings-body">
+          {/* LEFT MENU */}
           <section className="settings-menu">
-            <button className="settings-menu-item" type="button">
+            <button className="settings-menu-item">
               <FiUser /> Profile
             </button>
-            <button className="settings-menu-item active" type="button">
+            <button className="settings-menu-item active">
               <FiTag /> Categories
             </button>
-            <button className="settings-menu-item" type="button">
+            <button className="settings-menu-item">
               <FiBell /> Notifications
             </button>
-            <button className="settings-menu-item" type="button">
+            <button className="settings-menu-item">
               <FiLock /> Security
             </button>
           </section>
 
+          {/* RIGHT PANEL */}
           <section className="settings-panel">
             <div className="settings-panel-head">
               <h2>Category Management</h2>
 
-              <div className="settings-tabs" role="tablist" aria-label="Category type">
+              <div className="settings-tabs">
                 <button
-                  className={`settings-tab ${activeTab === "expense" ? "active" : ""}`}
+                  className={`settings-tab ${
+                    activeTab === "expense" ? "active" : ""
+                  }`}
                   onClick={() => setActiveTab("expense")}
-                  type="button"
-                  role="tab"
-                  aria-selected={activeTab === "expense"}
                 >
                   Expense Categories
                 </button>
                 <button
-                  className={`settings-tab ${activeTab === "income" ? "active" : ""}`}
+                  className={`settings-tab ${
+                    activeTab === "income" ? "active" : ""
+                  }`}
                   onClick={() => setActiveTab("income")}
-                  type="button"
-                  role="tab"
-                  aria-selected={activeTab === "income"}
                 >
                   Income Categories
                 </button>
               </div>
             </div>
 
+            {/* CATEGORY LIST */}
             <div className="settings-list">
-              {current.map((cat) => (
-                <div className="settings-row" key={cat.id}>
-                  <div className="settings-row-left">
-                    <span
-                      className="settings-dot"
-                      style={{ background: cat.color }}
-                      aria-hidden="true"
-                    />
-                    <span className="settings-row-name">{cat.name}</span>
-                  </div>
-
-                  <div className="settings-row-actions">
-                    <button
-                      className="settings-icon"
-                      onClick={() => openEdit(cat)}
-                      type="button"
-                      aria-label={`Edit ${cat.name}`}
-                      title="Edit"
-                    >
-                      <FiEdit2 />
-                    </button>
-                    <button
-                      className="settings-icon danger"
-                      onClick={() => removeCategory(cat.id)}
-                      type="button"
-                      aria-label={`Delete ${cat.name}`}
-                      title="Delete"
-                    >
-                      <FiX />
-                    </button>
-                  </div>
-                </div>
-              ))}
-
-              {current.length === 0 ? (
+              {categories.length === 0 ? (
                 <div className="settings-empty">No categories yet.</div>
-              ) : null}
+              ) : (
+                categories.map((cat) => (
+                  <div className="settings-row" key={cat._id}>
+                    <div className="settings-row-left">
+                      <span
+                        className="settings-dot"
+                        style={{ background: cat.color || "#2d7ff9" }}
+                      />
+                      <span className="settings-row-name">{cat.name}</span>
+                    </div>
+
+                    <div className="settings-row-actions">
+                      <button
+                        className="settings-icon danger"
+                        onClick={() => handleDelete(cat._id)}
+                        title="Delete"
+                      >
+                        <FiX />
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
 
             <div className="settings-footer">
-              <button className="settings-add" onClick={openCreate} type="button">
-                <FiPlus /> + Add New Category
+              <button
+                className="settings-add"
+                onClick={() => setIsModalOpen(true)}
+              >
+                <FiPlus /> Add New Category
               </button>
             </div>
           </section>
         </div>
 
-        {isModalOpen ? (
-          <div className="settings-modal-backdrop" onMouseDown={closeModal}>
+        {/* MODAL */}
+        {isModalOpen && (
+          <div
+            className="settings-modal-backdrop"
+            onMouseDown={() => setIsModalOpen(false)}
+          >
             <div
               className="settings-modal"
               onMouseDown={(e) => e.stopPropagation()}
-              role="dialog"
-              aria-modal="true"
-              aria-label={editing ? "Edit category" : "Add new category"}
             >
               <div className="settings-modal-head">
-                <h3>{editing ? "Edit Category" : "Add New Category"}</h3>
-                <button className="settings-x" onClick={closeModal} aria-label="Close">
+                <h3>Add New Category</h3>
+                <button
+                  className="settings-x"
+                  onClick={() => setIsModalOpen(false)}
+                >
                   ×
                 </button>
               </div>
 
-              <form className="settings-form" onSubmit={onSubmit}>
+              <form className="settings-form" onSubmit={handleSubmit}>
                 <label className="settings-field">
                   <span>Name</span>
                   <input
                     value={form.name}
-                    onChange={onChange("name")}
-                    placeholder="e.g., Office Rent"
+                    onChange={(e) =>
+                      setForm({ ...form, name: e.target.value })
+                    }
+                    placeholder="e.g. Utilities"
                     autoFocus
                   />
                 </label>
 
                 <label className="settings-field">
                   <span>Color</span>
-                  <input type="color" value={form.color} onChange={onChange("color")} />
+                  <input
+                    type="color"
+                    value={form.color}
+                    onChange={(e) =>
+                      setForm({ ...form, color: e.target.value })
+                    }
+                  />
                 </label>
 
+                {formError && (
+                  <div className="settings-form-error">{formError}</div>
+                )}
+
                 <div className="settings-form-actions">
-                  {formError ? <div className="settings-form-error">{formError}</div> : null}
-                  <button type="button" className="settings-secondary" onClick={closeModal}>
+                  <button
+                    type="button"
+                    className="settings-secondary"
+                    onClick={() => setIsModalOpen(false)}
+                  >
                     Cancel
                   </button>
                   <button type="submit" className="settings-primary">
-                    {editing ? "Save" : "Add"}
+                    Add
                   </button>
                 </div>
               </form>
             </div>
           </div>
-        ) : null}
+        )}
       </main>
     </div>
-    
   );
 }
 

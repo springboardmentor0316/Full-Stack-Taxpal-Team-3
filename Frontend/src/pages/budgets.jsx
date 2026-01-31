@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import BudgetModal from "../components/BudgetModal";
 import "../styles/budgets.css";
@@ -18,62 +18,113 @@ function getStatus(remaining, amount) {
 }
 
 function Budgets() {
-  const [budgets, setBudgets] = useState([
-    {
-      id: "b1",
-      category: "Groceries",
-      amount: 12000,
-      spent: 4600,
-      month: "2026-01",
-      description: "Monthly groceries",
-    },
-    {
-      id: "b2",
-      category: "Transport",
-      amount: 6000,
-      spent: 2500,
-      month: "2026-01",
-      description: "Fuel + commute",
-    },
-  ]);
-
+  const [budgets, setBudgets] = useState([]);
+  const [expenses, setExpenses] = useState([]);
   const [openBudgetModal, setOpenBudgetModal] = useState(false);
   const [editingBudget, setEditingBudget] = useState(null);
 
-  /* ===== TOTALS ===== */
+  /* ================= FETCH BUDGETS ================= */
+  const fetchBudgets = async () => {
+    const token = localStorage.getItem("token");
+    const res = await fetch("http://localhost:4000/api/budgets", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await res.json();
+    if (res.ok) setBudgets(data);
+  };
+
+  /* ================= FETCH EXPENSES ================= */
+  const fetchExpenses = async () => {
+    const token = localStorage.getItem("token");
+    const res = await fetch(
+      "http://localhost:4000/api/transactions/expense",
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    const data = await res.json();
+    if (res.ok) setExpenses(data);
+  };
+
+  useEffect(() => {
+    fetchBudgets();
+    fetchExpenses();
+  }, []);
+
+  /* ================= CALCULATE SPENT ================= */
+  const calculateSpentForBudget = (budget) => {
+    return expenses
+      .filter((e) => {
+        const expenseMonth = e.date?.slice(0, 7);
+        return (
+          e.category?.trim().toLowerCase() ===
+            budget.category?.trim().toLowerCase() &&
+          expenseMonth === budget.month
+        );
+      })
+      .reduce((sum, e) => sum + e.amount, 0);
+  };
+
+  /* ================= TOTALS ================= */
   const totals = useMemo(() => {
     const totalBudget = budgets.reduce((s, b) => s + b.amount, 0);
-    const totalSpent = budgets.reduce((s, b) => s + b.spent, 0);
+    const totalSpent = budgets.reduce(
+      (s, b) => s + calculateSpentForBudget(b),
+      0
+    );
+
     return {
       totalBudget,
       totalSpent,
       remaining: totalBudget - totalSpent,
     };
-  }, [budgets]);
+  }, [budgets, expenses]);
 
   const overallStatus = getStatus(
     totals.remaining,
     totals.totalBudget
   ).label;
 
-  /* ===== SAVE ===== */
-  const handleSave = (data) => {
+  /* ================= SAVE ================= */
+  const handleSave = async (data) => {
+    const token = localStorage.getItem("token");
+
     if (editingBudget) {
-      setBudgets((prev) =>
-        prev.map((b) =>
-          b.id === editingBudget.id ? { ...b, ...data } : b
-        )
+      await fetch(
+        `http://localhost:4000/api/budgets/${editingBudget._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(data),
+        }
       );
     } else {
-      setBudgets((prev) => [
-        {
-          id: Date.now().toString(),
-          spent: 0,
-          ...data,
+      await fetch("http://localhost:4000/api/budgets", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-        ...prev,
-      ]);
+        body: JSON.stringify(data),
+      });
     }
+
+    setOpenBudgetModal(false);
+    setEditingBudget(null);
+    fetchBudgets();
+  };
+
+  /* ================= DELETE ================= */
+  const handleDelete = async (id) => {
+    const token = localStorage.getItem("token");
+    await fetch(`http://localhost:4000/api/budgets/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    fetchBudgets();
   };
 
   return (
@@ -81,13 +132,12 @@ function Budgets() {
       <Sidebar />
 
       <main className="page-content">
-        {/* ===== HEADER ===== */}
+        {/* HEADER */}
         <div className="budget-header">
-          <div className="budget-header-text">
+          <div>
             <h1>Budgets</h1>
             <p className="subtitle">Set budgets and track spending</p>
           </div>
-
           <button
             className="add-budget-btn"
             onClick={() => {
@@ -99,32 +149,29 @@ function Budgets() {
           </button>
         </div>
 
-        {/* ===== SUMMARY ===== */}
+        {/* SUMMARY */}
         <div className="budget-summary-cards">
           <div className="summary-card">
             <span>Total Budget</span>
             <b>{formatCurrencyINR(totals.totalBudget)}</b>
           </div>
-
           <div className="summary-card">
             <span>Spent</span>
             <b className="red">{formatCurrencyINR(totals.totalSpent)}</b>
           </div>
-
           <div className="summary-card">
             <span>Remaining</span>
             <b className={totals.remaining >= 0 ? "green" : "red"}>
               {formatCurrencyINR(totals.remaining)}
             </b>
           </div>
-
           <div className="summary-card">
             <span>Status</span>
             <b>{overallStatus}</b>
           </div>
         </div>
 
-        {/* ===== TABLE ===== */}
+        {/* TABLE */}
         <div className="budget-table-card">
           <table className="budget-table">
             <thead>
@@ -139,67 +186,47 @@ function Budgets() {
             </thead>
 
             <tbody>
-              {budgets.length === 0 ? (
-                <tr>
-                  <td colSpan="6" className="empty">
-                    No budgets created yet
-                  </td>
-                </tr>
-              ) : (
-                budgets.map((b) => {
-                  const remaining = b.amount - b.spent;
-                  const status = getStatus(remaining, b.amount);
+              {budgets.map((b) => {
+                const spent = calculateSpentForBudget(b);
+                const remaining = b.amount - spent;
+                const status = getStatus(remaining, b.amount);
 
-                  return (
-                    <tr key={b.id}>
-                      <td>
-                        <b>{b.category}</b>
-                        <div className="muted">{b.month}</div>
-                      </td>
-                      <td>{formatCurrencyINR(b.amount)}</td>
-                      <td className="red">
-                        {formatCurrencyINR(b.spent)}
-                      </td>
-                      <td className={remaining >= 0 ? "green" : "red"}>
-                        {formatCurrencyINR(remaining)}
-                      </td>
-                      <td>
-                        <span className={`pill ${status.tone}`}>
-                          {status.label}
-                        </span>
-                      </td>
-                      <td>
-                        <div className="budget-actions">
-                          <button
-                            onClick={() => {
-                              setEditingBudget(b);
-                              setOpenBudgetModal(true);
-                            }}
-                          >
-                            Edit
-                          </button>
-                          <button
-                            className="danger"
-                            onClick={() =>
-                              setBudgets((prev) =>
-                                prev.filter((x) => x.id !== b.id)
-                              )
-                            }
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
+                return (
+                  <tr key={b._id}>
+                    <td>
+                      <b>{b.category}</b>
+                      <div className="muted">{b.month}</div>
+                    </td>
+                    <td>{formatCurrencyINR(b.amount)}</td>
+                    <td className="red">{formatCurrencyINR(spent)}</td>
+                    <td className={remaining >= 0 ? "green" : "red"}>
+                      {formatCurrencyINR(remaining)}
+                    </td>
+                    <td>
+                      <span className={`pill ${status.tone}`}>
+                        {status.label}
+                      </span>
+                    </td>
+                    <td>
+                      <button onClick={() => {
+                        setEditingBudget(b);
+                        setOpenBudgetModal(true);
+                      }}>Edit</button>
+                      <button
+                        className="danger"
+                        onClick={() => handleDelete(b._id)}
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
       </main>
 
-      {/* ===== MODAL ===== */}
       <BudgetModal
         isOpen={openBudgetModal}
         onClose={() => setOpenBudgetModal(false)}

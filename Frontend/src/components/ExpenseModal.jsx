@@ -1,7 +1,25 @@
 import { useEffect, useState } from "react";
 import "../styles/expenseModal.css";
+const CATEGORY_OPTIONS = [
+  "Housing",
+  "Groceries",
+  "Transport",
+  "Utilities",
+  "Dining",
+  "Shopping",
+  "Healthcare",
+  "Entertainment",
+  "Savings",
+  "Other",
+];
 
-function ExpenseModal({ isOpen, onClose, onSuccess, initialData = null, readOnly = false }) {
+function ExpenseModal({
+  isOpen,
+  onClose,
+  onSuccess,
+  initialData = null,
+  readOnly = false,
+}) {
   const today = new Date().toISOString().split("T")[0];
 
   const [formData, setFormData] = useState({
@@ -13,9 +31,32 @@ function ExpenseModal({ isOpen, onClose, onSuccess, initialData = null, readOnly
   });
 
   const [error, setError] = useState("");
+  const [categories, setCategories] = useState([]);
+
+  /* ================= FETCH BUDGET CATEGORIES ================= */
+  const fetchBudgetCategories = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch("http://localhost:4000/api/budgets", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+
+      if (res.ok) {
+        const uniqueCategories = [
+          ...new Set(data.map((b) => b.category)),
+        ];
+        setCategories(uniqueCategories);
+      }
+    } catch (err) {
+      console.error("Failed to fetch budget categories");
+    }
+  };
 
   useEffect(() => {
     if (isOpen) {
+      fetchBudgetCategories();
+
       if (initialData) {
         const initialDate = initialData.date
           ? new Date(initialData.date).toISOString().split("T")[0]
@@ -37,6 +78,7 @@ function ExpenseModal({ isOpen, onClose, onSuccess, initialData = null, readOnly
           notes: "",
         });
       }
+
       setError("");
     }
   }, [isOpen, initialData, today]);
@@ -86,11 +128,13 @@ function ExpenseModal({ isOpen, onClose, onSuccess, initialData = null, readOnly
       });
 
       if (!res.ok) {
-        setError(isEditing ? "Failed to update expense" : "Failed to save expense");
+        setError(
+          isEditing ? "Failed to update expense" : "Failed to save expense"
+        );
         return;
       }
 
-      onSuccess(); //  reload expense list
+
       onClose();
     } catch (err) {
       setError("Server error");
@@ -106,18 +150,20 @@ function ExpenseModal({ isOpen, onClose, onSuccess, initialData = null, readOnly
               {readOnly
                 ? "Expense Details"
                 : initialData
-                  ? "Edit Expense"
-                  : "Record New Expense"}
+                ? "Edit Expense"
+                : "Record New Expense"}
             </h2>
             <p>
               {readOnly
                 ? "Review your expense transaction details."
                 : initialData
-                  ? "Update details about your expense transaction."
-                  : "Add details about your expense to track your spending better."}
+                ? "Update details about your expense transaction."
+                : "Add details about your expense to track your spending better."}
             </p>
           </div>
-          <button className="closeBtn" onClick={onClose}>✕</button>
+          <button className="closeBtn" onClick={onClose}>
+            ✕
+          </button>
         </div>
 
         <form className="modalForm" onSubmit={handleSubmit}>
@@ -149,22 +195,23 @@ function ExpenseModal({ isOpen, onClose, onSuccess, initialData = null, readOnly
           </div>
 
           <div className="twoCol">
-            <div className="field">
-              <label>Category</label>
-              <select
-                name="category"
-                value={formData.category}
-                onChange={handleChange}
-                disabled={readOnly}
-              >
-                <option value="">Select a category</option>
-                <option value="Food">Food</option>
-                <option value="Rent">Rent</option>
-                <option value="Travel">Travel</option>
-                <option value="Utilities">Utilities</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
+<div className="field">
+  <label>Category</label>
+  <select
+    name="category"
+    value={formData.category}
+    onChange={handleChange}
+    disabled={readOnly}
+  >
+    <option value="">Select category</option>
+    {CATEGORY_OPTIONS.map((cat) => (
+      <option key={cat} value={cat}>
+        {cat}
+      </option>
+    ))}
+  </select>
+</div>
+
 
             <div className="field">
               <label>Date</label>

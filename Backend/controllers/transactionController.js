@@ -86,3 +86,39 @@ exports.getAllTransactions = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch transactions" });
   }
 };
+// UPDATE transaction
+exports.updateTransaction = async (req, res) => {
+  try {
+    const updated = await Transaction.findOneAndUpdate(
+      { _id: req.params.id, userId: req.user.userId },
+      req.body,
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ message: "Transaction not found" });
+    }
+
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to update transaction" });
+  }
+};
+
+// DELETE transaction
+exports.deleteTransaction = async (req, res) => {
+  try {
+    const deleted = await Transaction.findOneAndDelete({
+      _id: req.params.id,
+      userId: req.user.userId,
+    });
+
+    if (!deleted) {
+      return res.status(404).json({ message: "Transaction not found" });
+    }
+
+    res.json({ message: "Transaction deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to delete transaction" });
+  }
+};

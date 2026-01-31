@@ -26,16 +26,17 @@ app.get("/", (req, res) => {
     res.send("TaxPal backend is running 🚀")
   })
 
-app.use((err, req, res, next) => {
-    console.error(err.stack)
-    res.status(500).json({ message: "Something went wrong" })
-})
 
 //routes
 app.use('/api/users', userRoutes)
 app.use("/api/transactions", require("./routes/transactionRoutes"));
+app.use("/api/budgets", require("./routes/budgetRoutes"));
 
 
+app.use((err, req, res, next) => {
+    console.error(err.stack)
+    res.status(500).json({ message: "Something went wrong" })
+})
 // start the server on the port
 const PORT = process.env.PORT || 4000
 app.listen(PORT, () => {

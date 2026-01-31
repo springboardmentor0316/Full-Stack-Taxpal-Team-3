@@ -1,19 +1,6 @@
 import { useEffect, useState } from "react";
 import "../styles/expenseModal.css";
 
-const CATEGORY_OPTIONS = [
-  "Housing",
-  "Groceries",
-  "Transport",
-  "Utilities",
-  "Dining",
-  "Shopping",
-  "Healthcare",
-  "Entertainment",
-  "Savings",
-  "Other",
-];
-
 function BudgetModal({ isOpen, onClose, onSave, initialData }) {
   const [formData, setFormData] = useState({
     category: "",
@@ -23,19 +10,40 @@ function BudgetModal({ isOpen, onClose, onSave, initialData }) {
   });
 
   const [error, setError] = useState("");
+  const [categories, setCategories] = useState([]);
 
-  useEffect(() => {
-    if (isOpen) {
-      setFormData(
-        initialData || {
-          category: "",
-          amount: "",
-          month: "",
-          description: "",
+  /* ================= FETCH EXPENSE CATEGORIES ================= */
+  const fetchExpenseCategories = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(
+        "http://localhost:4000/api/categories?type=expense",
+        {
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
-      setError("");
+      const data = await res.json();
+      if (res.ok) setCategories(data);
+    } catch (err) {
+      console.error("Failed to fetch budget categories");
     }
+  };
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    fetchExpenseCategories();
+
+    setFormData(
+      initialData || {
+        category: "",
+        amount: "",
+        month: "",
+        description: "",
+      }
+    );
+
+    setError("");
   }, [isOpen, initialData]);
 
   if (!isOpen) return null;
@@ -70,9 +78,7 @@ function BudgetModal({ isOpen, onClose, onSave, initialData }) {
             <h2>{initialData ? "Edit Budget" : "Create Budget"}</h2>
             <p>Set a monthly budget to track your spending.</p>
           </div>
-          <button className="closeBtn" onClick={onClose}>
-            ✕
-          </button>
+          <button className="closeBtn" onClick={onClose}>✕</button>
         </div>
 
         {/* FORM */}
@@ -88,9 +94,9 @@ function BudgetModal({ isOpen, onClose, onSave, initialData }) {
                 onChange={handleChange}
               >
                 <option value="">Select category</option>
-                {CATEGORY_OPTIONS.map((c) => (
-                  <option key={c} value={c}>
-                    {c}
+                {categories.map((cat) => (
+                  <option key={cat._id} value={cat.name}>
+                    {cat.name}
                   </option>
                 ))}
               </select>

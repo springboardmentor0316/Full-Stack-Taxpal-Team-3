@@ -12,6 +12,7 @@ import Budgets from "./pages/budgets";
 import Categories from "./pages/categories";
 import Transactions from "./pages/transactions";
 import TaxEstimator from "./pages/TaxEstimator";
+import Reports from "./pages/reports";
 
 
 
@@ -33,6 +34,7 @@ function App() {
         <Route path="/settings" element={<Navigate to="/settings/categories" replace />} />
         <Route path="/settings/categories" element={<Categories />} />
         <Route path="/tax-estimator" element={<TaxEstimator />} />
+        <Route path="/reports" element={<Reports />} />
 
       
         <Route path="/verify-otp" element={<VerifyOtp />} />

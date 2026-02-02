@@ -6,6 +6,10 @@ const app = express()
 const userRoutes = require('./routes/userRoutes')
 const cors = require("cors")
 const mongoose = require("mongoose");
+const taxRoutes = require("./routes/taxRoutes");
+
+
+
 
 mongoose
   .connect(process.env.MONGO_URI)
@@ -23,7 +27,7 @@ app.use(express.json())
 app.use(cors())
 
 app.get("/", (req, res) => {
-    res.send("TaxPal backend is running 🚀")
+    res.send("TaxPal backend is running ")
   })
 
 
@@ -32,6 +36,7 @@ app.use('/api/users', userRoutes)
 app.use("/api/transactions", require("./routes/transactionRoutes"));
 app.use("/api/budgets", require("./routes/budgetRoutes"));
 app.use("/api/categories", require("./routes/categoryRoutes"));
+app.use("/api/tax", taxRoutes);
 
 app.use((err, req, res, next) => {
     console.error(err.stack)

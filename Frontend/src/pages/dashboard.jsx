@@ -126,7 +126,7 @@ useEffect(() => {
   </span>
 
     
-  <span onClick={() => navigate("/taxestimator")}>
+  <span onClick={() => navigate("/tax-estimator")}>
     <FaMoneyBillWave /> Tax Estimator
   </span>
 

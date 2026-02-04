@@ -13,6 +13,9 @@ import Categories from "./pages/categories";
 import Transactions from "./pages/transactions";
 import TaxEstimator from "./pages/TaxEstimator";
 import Reports from "./pages/reports";
+import Profile from "./pages/profile";
+import Notifications from "./pages/notifications";
+import Security from "./pages/security";
 
 
 
@@ -32,7 +35,10 @@ function App() {
         <Route path="/expenses" element={<Expenses />} />
         <Route path="/budgets" element={<Budgets />} />
         <Route path="/settings" element={<Navigate to="/settings/categories" replace />} />
+        <Route path="/settings/profile" element={<Profile />} />
         <Route path="/settings/categories" element={<Categories />} />
+        <Route path="/settings/notifications" element={<Notifications />} />
+        <Route path="/settings/security" element={<Security />} />
         <Route path="/tax-estimator" element={<TaxEstimator />} />
         <Route path="/reports" element={<Reports />} />
 

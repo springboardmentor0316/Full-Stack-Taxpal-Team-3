@@ -1,13 +1,7 @@
 import { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
-import {
-  FiPlus,
-  FiX,
-  FiTag,
-  FiUser,
-  FiBell,
-  FiLock,
-} from "react-icons/fi";
+import SettingsMenu from "../components/SettingsMenu";
+import { FiPlus, FiX } from "react-icons/fi";
 import "../styles/categories.css";
 
 function Categories() {
@@ -109,21 +103,7 @@ function Categories() {
         </div>
 
         <div className="settings-body">
-          {/* LEFT MENU */}
-          <section className="settings-menu">
-            <button className="settings-menu-item">
-              <FiUser /> Profile
-            </button>
-            <button className="settings-menu-item active">
-              <FiTag /> Categories
-            </button>
-            <button className="settings-menu-item">
-              <FiBell /> Notifications
-            </button>
-            <button className="settings-menu-item">
-              <FiLock /> Security
-            </button>
-          </section>
+          <SettingsMenu />
 
           {/* RIGHT PANEL */}
           <section className="settings-panel">

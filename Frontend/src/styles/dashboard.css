@@ -88,6 +88,20 @@ body {
   display: flex;
   gap: 10px;
   margin-bottom: 15px;
+  align-items: center;
+}
+
+.profile svg {
+  font-size: 35px;   
+  color: white;  
+  flex-shrink: 0;    
+}
+
+.user-info {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1;           
+  margin: 0; 
 }
 
 .logout {

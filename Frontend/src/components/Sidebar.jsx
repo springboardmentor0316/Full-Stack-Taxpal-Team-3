@@ -64,8 +64,7 @@ function Sidebar() {
           <div className="profile">
             <FaUserCircle />
             <div>
-              <p className="name">{name}</p>
-              <p className="email">{email}</p>
+              <p className="user-info">{name}</p>
             </div>
           </div>
 

@@ -147,7 +147,6 @@ useEffect(() => {
             <FaUserCircle />
             <div>
               <p className="user-info">{userName}</p>
-              <p className="user-email">{userEmail}</p>
             </div>
           </div>
 

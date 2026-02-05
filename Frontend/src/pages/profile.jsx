@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import SettingsMenu from "../components/SettingsMenu";
 import "../styles/categories.css";
@@ -14,13 +14,12 @@ function safeParse(json) {
 }
 
 function Profile() {
-  const email = useMemo(() => localStorage.getItem("email") || "", []);
-
   const [isEditing, setIsEditing] = useState(false);
   const [status, setStatus] = useState("");
 
   const [form, setForm] = useState({
     fullName: localStorage.getItem("name") || "",
+    email: localStorage.getItem("email") || "",
     phone: "",
     currency: "₹",
     timezone: "Asia/Kolkata",
@@ -34,6 +33,7 @@ function Profile() {
 
     setForm((prev) => ({
       ...prev,
+      email: stored.email ?? prev.email,
       phone: stored.phone ?? prev.phone,
       currency: stored.currency ?? prev.currency,
       timezone: stored.timezone ?? prev.timezone,
@@ -65,10 +65,18 @@ function Profile() {
       return;
     }
 
+    const nextEmail = form.email.trim();
+    if (!nextEmail) {
+      setStatus("Email is required.");
+      return;
+    }
+
     localStorage.setItem("name", fullName);
+    localStorage.setItem("email", nextEmail);
     localStorage.setItem(
       STORAGE_KEY,
       JSON.stringify({
+        email: nextEmail,
         phone: form.phone,
         currency: form.currency,
         timezone: form.timezone,
@@ -105,17 +113,9 @@ function Profile() {
             <div className="settings-section">
               <div className="settings-profile-top">
                 <div className="settings-profile-left">
-                  <div className="settings-avatar-lg">
-                    {form.pictureDataUrl ? (
-                      <img src={form.pictureDataUrl} alt="Profile" />
-                    ) : (
-                      <span>{(form.fullName || "U").slice(0, 1).toUpperCase()}</span>
-                    )}
-                  </div>
+                 
 
-                  <div className="settings-note settings-note-inline">
-                    Hi DHONTHULA SAIRAM, you can update your profile details below.
-                  </div>
+                 
                 </div>
               </div>
 
@@ -132,8 +132,14 @@ function Profile() {
                 </label>
 
                 <label className="settings-field">
-                  <span>Email (read-only)</span>
-                  <input type="text" value={email} disabled placeholder="your@email.com" />
+                  <span>Email</span>
+                  <input
+                    type="email"
+                    value={form.email}
+                    onChange={onChange("email")}
+                    disabled={!isEditing}
+                    placeholder="your@email.com"
+                  />
                 </label>
 
                 <label className="settings-field">
@@ -143,7 +149,7 @@ function Profile() {
                     value={form.phone}
                     onChange={onChange("phone")}
                     disabled={!isEditing}
-                    placeholder="e.g. +91 98765 43210"
+                    placeholder="please enter your number"
                   />
                 </label>
 
@@ -176,10 +182,7 @@ function Profile() {
                   </select>
                 </label>
 
-                <label className="settings-field">
-                  <span>Profile Picture (optional)</span>
-                  <input type="file" accept="image/*" onChange={handleUpload} disabled={!isEditing} />
-                </label>
+               
               </div>
 
               {status ? <div className="settings-status">{status}</div> : null}

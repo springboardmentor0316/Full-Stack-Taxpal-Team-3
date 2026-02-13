@@ -3,8 +3,6 @@ import { FaDownload, FaEye, FaPrint, FaTrash } from "react-icons/fa";
 import Sidebar from "../components/Sidebar";
 import "../styles/reports.css";
 
-const STORAGE_KEY = "taxpal_recent_reports_v1";
-
 function formatDateTime(isoString) {
   try {
     const date = new Date(isoString);
@@ -25,6 +23,20 @@ function slugify(value) {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)+/g, "");
 }
+const REPORT_TYPE_MAP = {
+  "Income Statement": "Income Summary",
+  "Expense Summary": "Expense Summary",
+  "Cash Flow": "Overall Summary",
+  "Transaction Report": "Transaction Report",
+};
+
+const PERIOD_MAP = {
+  "Current Month": "currentMonth",
+  "Last Month": "lastMonth",
+  "Last 3 Months": "last3Months",
+  "Current Year": "currentYear",
+};
+
 
 function Reports() {
   const [reportType, setReportType] = useState("Income Statement");
@@ -33,23 +45,6 @@ function Reports() {
 
   const [recentReports, setRecentReports] = useState([]);
   const [activeReportId, setActiveReportId] = useState(null);
-
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      const parsed = raw ? JSON.parse(raw) : [];
-      if (Array.isArray(parsed)) {
-        setRecentReports(parsed);
-        if (parsed.length > 0) setActiveReportId(parsed[0].id);
-      }
-    } catch {
-      setRecentReports([]);
-    }
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(recentReports));
-  }, [recentReports]);
 
   const activeReport = useMemo(
     () => recentReports.find((r) => r.id === activeReportId) || null,
@@ -61,23 +56,68 @@ function Reports() {
     setPeriod("Current Month");
     setFormat("PDF");
   };
+  const fetchRecentReports = async () => {
+  try {
+    const res = await fetch("http://localhost:4000/api/reports/recent");
+    const data = await res.json();
 
-  const handleGenerate = () => {
-    const now = new Date();
-    const id = `${now.getTime()}`;
+    const formatted = data.map((r) => ({
+      id: r._id,
+      name: `${r.reportType} (${r.period})`,
+      reportType: r.reportType,
+      period: r.period,
+      format: r.format,
+      generatedAt: r.createdAt,
+      downloadUrl: r.fileName ? `/reports/${r.fileName}` : null,
+    }));
 
-    const report = {
-      id,
-      name: `${reportType} (${period})`,
-      reportType,
-      period,
+    setRecentReports(formatted);
+    if (formatted.length > 0) {
+      setActiveReportId(formatted[0].id);
+    }
+  } catch (err) {
+    console.error("Failed to load recent reports", err);
+  }
+  
+};
+useEffect(() => {
+  fetchRecentReports();
+}, []);
+
+const generateReportFromBackend = async () => {
+  const res = await fetch("http://localhost:4000/api/reports/generate", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      reportType: REPORT_TYPE_MAP[reportType],
+      period: PERIOD_MAP[period],
       format,
-      generatedAt: now.toISOString(),
-    };
+    }),
+  });
 
-    setRecentReports((prev) => [report, ...prev].slice(0, 10));
-    setActiveReportId(id);
-  };
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.error || "Failed to generate report");
+  }
+
+  return data;
+};
+
+const handleGenerate = async () => {
+  try {
+    const data = await generateReportFromBackend();
+    await fetchRecentReports();
+    window.open(`http://localhost:4000${data.downloadUrl}`, "_blank");
+  } catch (err) {
+    console.error(err);
+    alert("Failed to generate report");
+  }
+};
+
+
 
   const handleDelete = (id) => {
     const ok = window.confirm("Remove this report from Recent Reports?");
@@ -113,6 +153,9 @@ function Reports() {
 
     URL.revokeObjectURL(url);
   };
+
+
+
 
   const handlePrint = () => {
     if (!activeReport) return;
@@ -150,18 +193,16 @@ function Reports() {
     w.document.write(html);
     w.document.close();
   };
+const handleDownload = () => {
+  if (!activeReport?.downloadUrl) {
+    alert("No downloadable file available");
+    return;
+  }
 
-  const handleDownload = () => {
-    if (!activeReport) return;
+  window.open(`http://localhost:4000${activeReport.downloadUrl}`, "_blank");
+};
 
-    if (activeReport.format === "CSV") {
-      downloadCsv(activeReport);
-      return;
-    }
 
-    // For PDF: trigger Print dialog so user can "Save as PDF".
-    handlePrint();
-  };
 
   return (
     <div className="dashboard">
@@ -253,25 +294,30 @@ function Reports() {
                           type="button"
                           className="icon-action"
                           title="Preview"
-                          onClick={() => setActiveReportId(r.id)}
+                          onClick={() => {
+  setActiveReportId(r.id);
+
+}}
+
                         >
                           <FaEye />
                         </button>
-                        <button
-                          type="button"
-                          className="icon-action"
-                          title="Download"
-                          onClick={() => {
-                            setActiveReportId(r.id);
-                            if (r.format === "CSV") downloadCsv(r);
-                            else {
-                              // PDF: use print so user can save as PDF
-                              setTimeout(handlePrint, 0);
-                            }
-                          }}
-                        >
-                          <FaDownload />
-                        </button>
+                         <button
+  type="button"
+  className="icon-action"
+  title="Download"
+  onClick={() => {
+    console.log("ROW DATA:", r);
+    if (!r.downloadUrl) {
+      alert("No downloadable file available");
+      return;
+    }
+    window.open(`http://localhost:4000${r.downloadUrl}`, "_blank");
+  }}
+>
+  <FaDownload />
+</button>
+
                         <button
                           type="button"
                           className="icon-action danger"

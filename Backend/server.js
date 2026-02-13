@@ -7,7 +7,7 @@ const userRoutes = require('./routes/userRoutes')
 const cors = require("cors")
 const mongoose = require("mongoose");
 const taxRoutes = require("./routes/taxRoutes");
-
+const reportRoutes = require("./routes/reportRoutes");
 
 
 
@@ -37,6 +37,9 @@ app.use("/api/transactions", require("./routes/transactionRoutes"));
 app.use("/api/budgets", require("./routes/budgetRoutes"));
 app.use("/api/categories", require("./routes/categoryRoutes"));
 app.use("/api/tax", taxRoutes);
+app.use("/api/reports", require("./routes/reportRoutes"));
+app.use("/reports", express.static("reports"));
+
 
 app.use((err, req, res, next) => {
     console.error(err.stack)

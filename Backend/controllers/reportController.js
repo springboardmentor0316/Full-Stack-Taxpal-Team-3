@@ -8,7 +8,7 @@ const {
   expenseSummary,
   incomeSummary,
   overallTotals
-} = require("../utils/reportAggregations");
+} = require("../utils/reportAggreagations");
 
 exports.generateReport = async (req, res) => {
   try {

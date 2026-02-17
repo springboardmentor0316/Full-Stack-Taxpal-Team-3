@@ -68,11 +68,14 @@
   background: var(--primary);
   border: none;
   color: #fff;
-  height: 38px;
-  padding: 0 14px;
-  border-radius: 10px;
-  font-weight: 600;
+  height: 44px;
+  padding: 0 24px;
+  border-radius: 12px;
+  font-weight: 700;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .btn-primary:disabled {
@@ -95,10 +98,10 @@
   background: #fff;
   border: 1px solid #e5e7eb;
   color: #111827;
-  height: 36px;
-  padding: 0 12px;
-  border-radius: 10px;
-  font-weight: 600;
+  height: 44px;
+  padding: 0 24px;
+  border-radius: 12px;
+  font-weight: 700;
   cursor: pointer;
   display: inline-flex;
   align-items: center;

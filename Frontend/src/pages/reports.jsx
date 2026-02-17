@@ -302,22 +302,18 @@ const handleDownload = () => {
                         >
                           <FaEye />
                         </button>
-                         <button
-  type="button"
-  className="icon-action"
-  title="Download"
-  onClick={() => {
-    console.log("ROW DATA:", r);
-    if (!r.downloadUrl) {
-      alert("No downloadable file available");
-      return;
-    }
-    window.open(`http://localhost:4000${r.downloadUrl}`, "_blank");
-  }}
->
-  <FaDownload />
-</button>
+                        <button
+                          type="button"
+                          className="icon-action"
+                          title="Download"
+                         onClick={() => {
+  setActiveReportId(r.id);
+  handleDownload();
+}}
 
+                        >
+                          <FaDownload />
+                        </button>
                         <button
                           type="button"
                           className="icon-action danger"

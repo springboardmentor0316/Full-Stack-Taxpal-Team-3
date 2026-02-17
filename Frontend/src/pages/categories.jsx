@@ -4,11 +4,26 @@ import SettingsMenu from "../components/SettingsMenu";
 import { FiPlus, FiX } from "react-icons/fi";
 import "../styles/categories.css";
 
+const COLORS = [
+  "#2d7ff9", // Blue
+  "#16a34a", // Green
+  "#dc2626", // Red
+  "#f59e0b", // Amber
+  "#7c3aed", // Violet
+  "#ec4899", // Pink
+  "#06b6d4", // Cyan
+  "#f97316", // Orange
+  "#64748b", // Slate
+];
+
 function Categories() {
   const [activeTab, setActiveTab] = useState("expense");
   const [categories, setCategories] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [form, setForm] = useState({ name: "", color: "#2d7ff9" });
+  const [form, setForm] = useState({
+    name: "",
+    color: COLORS[Math.floor(Math.random() * COLORS.length)]
+  });
   const [formError, setFormError] = useState("");
 
   const token = localStorage.getItem("token");
@@ -63,7 +78,10 @@ function Categories() {
         return;
       }
 
-      setForm({ name: "", color: "#2d7ff9" });
+      setForm({
+        name: "",
+        color: COLORS[Math.floor(Math.random() * COLORS.length)]
+      });
       setFormError("");
       setIsModalOpen(false);
       fetchCategories();
@@ -112,17 +130,15 @@ function Categories() {
 
               <div className="settings-tabs">
                 <button
-                  className={`settings-tab ${
-                    activeTab === "expense" ? "active" : ""
-                  }`}
+                  className={`settings-tab ${activeTab === "expense" ? "active" : ""
+                    }`}
                   onClick={() => setActiveTab("expense")}
                 >
                   Expense Categories
                 </button>
                 <button
-                  className={`settings-tab ${
-                    activeTab === "income" ? "active" : ""
-                  }`}
+                  className={`settings-tab ${activeTab === "income" ? "active" : ""
+                    }`}
                   onClick={() => setActiveTab("income")}
                 >
                   Income Categories
@@ -203,16 +219,33 @@ function Categories() {
                   />
                 </label>
 
-                <label className="settings-field">
+                <div className="settings-field">
                   <span>Color</span>
-                  <input
-                    type="color"
-                    value={form.color}
-                    onChange={(e) =>
-                      setForm({ ...form, color: e.target.value })
-                    }
-                  />
-                </label>
+                  <div className="color-presets">
+                    {COLORS.map((c) => (
+                      <button
+                        key={c}
+                        type="button"
+                        className={`color-preset-btn ${form.color === c ? "active" : ""
+                          }`}
+                        style={{ background: c }}
+                        onClick={() => setForm({ ...form, color: c })}
+                        title={c}
+                      />
+                    ))}
+                    <div className="color-picker-wrapper">
+                      <input
+                        type="color"
+                        className="color-picker-input"
+                        value={COLORS.includes(form.color) ? "#ffffff" : form.color}
+                        onChange={(e) =>
+                          setForm({ ...form, color: e.target.value })
+                        }
+                        title="Custom Color"
+                      />
+                    </div>
+                  </div>
+                </div>
 
                 {formError && (
                   <div className="settings-form-error">{formError}</div>

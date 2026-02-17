@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import BudgetModal from "../components/BudgetModal";
+import { FaEdit, FaTrash } from "react-icons/fa";
 import "../styles/budgets.css";
 
 function formatCurrencyINR(value) {
@@ -58,7 +59,7 @@ function Budgets() {
         const expenseMonth = e.date?.slice(0, 7);
         return (
           e.category?.trim().toLowerCase() ===
-            budget.category?.trim().toLowerCase() &&
+          budget.category?.trim().toLowerCase() &&
           expenseMonth === budget.month
         );
       })
@@ -181,7 +182,7 @@ function Budgets() {
                 <th>Spent</th>
                 <th>Remaining</th>
                 <th>Status</th>
-                <th>Actions</th>
+                <th className="budget-actions-cell">Actions</th>
               </tr>
             </thead>
 
@@ -207,16 +208,21 @@ function Budgets() {
                         {status.label}
                       </span>
                     </td>
-                    <td>
-                      <button onClick={() => {
-                        setEditingBudget(b);
-                        setOpenBudgetModal(true);
-                      }}>Edit</button>
+                    <td className="budget-actions-cell">
                       <button
-                        className="danger"
+                        className="action-btn edit"
+                        onClick={() => {
+                          setEditingBudget(b);
+                          setOpenBudgetModal(true);
+                        }}
+                      >
+                        <FaEdit />
+                      </button>
+                      <button
+                        className="action-btn delete"
                         onClick={() => handleDelete(b._id)}
                       >
-                        Delete
+                        <FaTrash />
                       </button>
                     </td>
                   </tr>

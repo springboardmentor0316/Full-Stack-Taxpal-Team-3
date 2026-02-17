@@ -170,13 +170,13 @@ function Transactions() {
                     </td>
                     <td className="actions-col">
                       <button
-                        className="icon-btn edit"
+                        className="action-btn edit"
                         onClick={() => openEdit(t)}
                       >
                         <FaEdit />
                       </button>
                       <button
-                        className="icon-btn delete"
+                        className="action-btn delete"
                         onClick={() => handleDelete(t)}
                       >
                         <FaTrash />
@@ -205,7 +205,7 @@ function Transactions() {
             onSuccess={fetchTransactions}
           />
         )}
- 
+
         {/* EDIT MODALS */}
         {activeTransaction?.type === "income" && (
           <IncomeModal

@@ -9,6 +9,28 @@ import {
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 function SpendingChart({ expenses }) {
+
+  //  ADD THIS CHECK (VERY IMPORTANT)
+  if (!expenses || expenses.length === 0) {
+    return (
+      <div className="chart-card">
+        <h3 className="chart-title">Spending Breakdown</h3>
+        <div
+          className="pie-wrapper"
+          style={{
+            height: "280px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "#888",
+          }}
+        >
+          No expense data available
+        </div>
+      </div>
+    );
+  }
+
   const categoryTotals = {};
 
   expenses.forEach((e) => {
@@ -36,14 +58,10 @@ function SpendingChart({ expenses }) {
 
   const options = {
     responsive: true,
-    maintainAspectRatio: false, // 🔥 IMPORTANT
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         position: "bottom",
-        labels: {
-          boxWidth: 12,
-          padding: 15,
-        },
       },
     },
   };
@@ -51,8 +69,7 @@ function SpendingChart({ expenses }) {
   return (
     <div className="chart-card">
       <h3 className="chart-title">Spending Breakdown</h3>
-
-      <div className="pie-wrapper">
+      <div className="pie-wrapper" style={{ height: "280px" }}>
         <Pie data={data} options={options} />
       </div>
     </div>

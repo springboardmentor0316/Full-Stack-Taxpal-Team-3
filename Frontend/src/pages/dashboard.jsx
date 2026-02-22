@@ -46,7 +46,8 @@ function Dashboard() {
   const handleLogout = () => navigate("/");
 
   const [openExpenseModal, setOpenExpenseModal] = useState(false);
-  const [openIncomeModal, setOpenIncomeModal] = useState(false); // ✅ ADD THIS
+  const [openIncomeModal, setOpenIncomeModal] = useState(false);
+   //  ADD THIS
   /* ---------------- THEME ---------------- */
   const [theme, setTheme] = useState(
     localStorage.getItem("theme") || "light"
@@ -98,8 +99,10 @@ useEffect(() => {
     );
 
     const data = await res.json();
+    console.log("Expenses API Responses" , data);
     if (res.ok) setExpenses(data);
-  };
+  } ;
+  
 
   fetchExpenses();
 }, []);

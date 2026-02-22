@@ -274,7 +274,8 @@ exports.verifyEmailOtp = async (req, res) => {
 
 // reset password
 exports.resetPassword = async (req, res) => {
-  console.log("RESET PASSWORD API HIT", req.body); // 👈 ADD
+  console.log("RESET PASSWORD API HIT", req.body); 
+  //  ADD
   try {
     const { email, password } = req.body
 
@@ -303,7 +304,7 @@ exports.resetPassword = async (req, res) => {
 
     await user.save()
 
-   return  res.json(200).json({
+   return  res.status(200).json({
     message: "password reset sucessful"
    })
   } catch (error) {

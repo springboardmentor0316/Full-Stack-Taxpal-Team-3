@@ -4,7 +4,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "backend": "node server.js"
+    "backend": "node server.js",
+    "seed": "node seedDatabase.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",

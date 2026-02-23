@@ -443,6 +443,14 @@ TaxPal uses progressive tax slabs:
 
 Developed by **Team 3** as part of the Full-Stack Development program.
 
+### Team Members
+
+- **Hanika**
+- **Sairam**
+- **Manasvi**
+- **Shruthe**
+- **Aditya**
+
 ---
 
 ## 📄 License

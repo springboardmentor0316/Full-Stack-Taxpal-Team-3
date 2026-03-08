@@ -1,0 +1,163 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f5f5f5;
+}
+
+.main {
+  display: flex;
+  height: 100vh;
+}
+
+/* LEFT PANEL */
+.left-panel {
+  width: 40%;
+  background: linear-gradient(135deg, #4b2cff, #5f5cff, #2fb3a3);
+  color: white;
+  padding: 50px;
+  position: relative;
+}
+
+.left-panel h1 {
+  font-size: 28px;
+  line-height: 1.4;
+}
+
+.illustration {
+  position: absolute;
+  bottom: 40px;
+  right: -60px;
+  z-index: 5;
+}
+
+.illustration img {
+  width: 420px;
+}
+
+/* RIGHT PANEL */
+.right-panel {
+  width: 60%;
+  background: white;
+  padding: 60px 80px;
+  border-top-left-radius: 40px;
+  border-bottom-left-radius: 40px;
+  margin-left: -80px;
+  position: relative;
+  z-index: 1;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+/* FORM */
+.form {
+  width: 420px;
+}
+
+.row {
+  display: flex;
+  gap: 12px;
+}
+
+/* NORMAL INPUTS */
+input {
+  width: 100%;
+  height: 44px;
+  margin-bottom: 15px;
+  padding-left: 20px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+/* PASSWORD INPUT */
+.password-box {
+  position: relative;
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.password-box input {
+  width: 100%;
+  height: 44px;
+  padding-left: 20px;
+  padding-right: 45px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+/* EYE ICON */
+.eye-icon {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #666;
+}
+
+.eye-icon:hover {
+  color: #000;
+}
+
+/* BUTTON */
+button {
+  width: 100%;
+  height: 44px;
+  background: #111;
+  color: white;
+  border-radius: 10px;
+  border: none;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+/* LOGIN TEXT */
+.login {
+  text-align: center;
+  margin-top: 15px;
+}
+
+.login span {
+  color: #4b2cff;
+  cursor: pointer;
+}
+
+/* TEXT HIGHLIGHT */
+.highlight {
+  color: #ffffff94;
+}
+
+/* REMOVE BROWSER DEFAULT PASSWORD EYE */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+}
+
+input[type="password"]::-webkit-credentials-auto-fill-button,
+input[type="password"]::-webkit-textfield-decoration-container {
+  display: none;
+}
+.input-field {
+  width: 100%;
+  height: 44px;
+  margin-bottom: 15px;
+  padding: 0 20px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  background: white;
+  color: #898787;
+
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  background-image: url("data:image/svg+xml,%3Csvg fill='gray' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 15px center;
+}
+

@@ -1,0 +1,10 @@
+// download these dependencies before running express server.js, if not already existing
+
+npm install express
+npm install mongoose
+npm install cors
+npm install jsonwebtoken
+npm install bcrypt
+
+// or do -
+npm i express mongoose cors jsonwebtoken bcrypt
